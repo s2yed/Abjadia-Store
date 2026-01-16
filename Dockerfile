@@ -52,7 +52,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Configure Nginx (Alpine specifics)
-RUN mkdir -p /run/nginx
+RUN mkdir -p /run/nginx /var/log/supervisor
 COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 
 # Copy PHP configuration
@@ -62,10 +62,10 @@ COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
