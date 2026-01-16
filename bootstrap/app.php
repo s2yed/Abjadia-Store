@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'status' => \App\Http\Middleware\CheckUserStatus::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
+            'dashboard.access' => \App\Http\Middleware\RedirectIfCustomerToProfile::class,
         ]);
 
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {

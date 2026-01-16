@@ -48,6 +48,11 @@ Route::middleware(['locale'])->group(function () {
 
     Route::get('/dashboard/{any?}', function () {
         $user = \Illuminate\Support\Facades\Auth::user() ?: \Illuminate\Support\Facades\Auth::guard('admin')->user();
+        
+        if ($user && strtolower($user->role) === 'customer') {
+            return redirect('/my-account')->with('error', 'Unauthorized access.');
+        }
+
         $authUser = $user ? [
             'id' => $user->id,
             'name' => $user->name,
@@ -55,7 +60,7 @@ Route::middleware(['locale'])->group(function () {
             'role' => $user->role
         ] : null;
         return view('dashboard', ['authUser' => $authUser]);
-    })->where('any', '.*')->middleware(['auth:admin,web', 'role:admin,editor'])->name('dashboard');
+    })->where('any', '.*')->middleware(['dashboard.access', 'auth:admin,web', 'role:admin,editor'])->name('dashboard');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -64,7 +69,7 @@ Route::middleware(['locale'])->group(function () {
     });
 
     // Dashboard Internal API Routes (Session Auth)
-    Route::middleware(['auth:admin,web', 'role:admin,editor'])->prefix('api')->name('api.')->group(function () {
+    Route::middleware(['dashboard.access', 'auth:admin,web', 'role:admin,editor'])->prefix('api')->name('api.')->group(function () {
         Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
         Route::apiResource('products', \App\Http\Controllers\Api\ProductController::class);
         Route::apiResource('categories', \App\Http\Controllers\Api\CategoryController::class);

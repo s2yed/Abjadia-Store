@@ -82,7 +82,7 @@
                     <button @click="toggleLanguage" class="text-gray-600 hover:text-gray-900 font-medium">
                         {{ currentLocale === 'en' ? 'العربية' : 'English' }}
                     </button>
-                    <span class="text-gray-600">{{ $t('welcome_user', { name: user?.name || 'Admin' }) }}</span>
+                    <span class="text-gray-600">{{ welcomeMessage }}</span>
                     <button @click="logout" class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-3 rounded shadow transition-colors">
                         {{ $t('logout') }}
                     </button>
@@ -111,6 +111,12 @@ export default {
     computed: {
         isAdmin() {
             return this.user && this.user.role === 'admin';
+        },
+        welcomeMessage() {
+            const userName = this.user?.name || 'Admin';
+            return this.currentLocale === 'ar' 
+                ? `مرحباً، ${userName}` 
+                : `Welcome, ${userName}`;
         }
     },
     methods: {

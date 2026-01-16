@@ -53,11 +53,10 @@ class AdminAuthenticatedSessionController extends Controller
     public function destroy(Request $request)
     {
         Auth::guard('admin')->logout();
+        Auth::guard('web')->logout();
 
-        if (! Auth::guard('web')->check()) {
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');
     }

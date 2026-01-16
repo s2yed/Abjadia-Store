@@ -69,6 +69,15 @@
                     {{ __('Sign in') }}
                 </button>
             </div>
+
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-600">
+                    {{ __("Don't have an account?") }}
+                    <a href="{{ route('register') }}" class="font-medium text-secondary-orange hover:text-orange-500">
+                        {{ __('Register now') }}
+                    </a>
+                </p>
+            </div>
         </form>
     </div>
 </div>
