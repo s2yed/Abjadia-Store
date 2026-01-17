@@ -19,12 +19,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS in production or when behind an SSL proxy (Koyeb), but NEVER on local
-        if (!app()->isLocal()) {
-            if (app()->environment('production') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
-                \Illuminate\Support\Facades\URL::forceScheme('https');
-            }
+
+        //  if (app()->environment('production') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+        //         \Illuminate\Support\Facades\URL::forceScheme('https');
+        //     }
+        // Force HTTPS URLs when behind a proxy (cloud platforms like Koyeb)
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+        
+        // Also force HTTPS in production environment
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+        
 
         try {
             // Share global categories for navbar
