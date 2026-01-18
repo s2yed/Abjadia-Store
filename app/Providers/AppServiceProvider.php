@@ -19,11 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
-        //  if (app()->environment('production') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
-        //         \Illuminate\Support\Facades\URL::forceScheme('https');
-        //     }
-        // Force HTTPS URLs when behind a proxy (cloud platforms like Koyeb)
+ 
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
@@ -43,5 +39,7 @@ class AppServiceProvider extends ServiceProvider
             // Fallback if migration hasn't run yet or other DB issue
             \Illuminate\Support\Facades\View::share('navbarCategories', collect([]));
         }
+
+        \App\Models\Order::observe(\App\Observers\OrderObserver::class);
     }
 }

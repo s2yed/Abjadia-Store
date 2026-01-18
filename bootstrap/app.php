@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'dashboard.access' => \App\Http\Middleware\RedirectIfCustomerToProfile::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            '/payment/webhook',
+        ]);
+
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
             if ($request->is('admin/*') || $request->is('admin') || $request->is('dashboard/*') || $request->is('dashboard')) {
                 return route('admin.login');

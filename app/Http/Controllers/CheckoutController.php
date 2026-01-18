@@ -42,13 +42,17 @@ class CheckoutController extends Controller
 
         $total = 0;
         foreach ($cart as $item) {
+            $product = \App\Models\Product::find($item['id']);
+            if (!$product || $product->stock < $item['quantity']) {
+                return redirect()->route('cart.index')->with('error', __('One or more items are out of stock.'));
+            }
             $total += $item['price'] * $item['quantity'];
         }
 
         DB::beginTransaction();
         try {
             $order = Order::create([
-                'user_id' => \Illuminate\Support\Facades\Auth::id() ?? null, // Nullable for guest checkout? (Model needs update if so, assuming auth for now or nullable)
+                'user_id' => \Illuminate\Support\Facades\Auth::id() ?? null,
                 'status' => 'pending',
                 'total_price' => $total,
                 'payment_method' => $request->payment_method,
@@ -69,6 +73,22 @@ class CheckoutController extends Controller
 
             DB::commit();
             Session::forget('cart');
+
+            if ($request->payment_method === 'COD') {
+                $order->update(['status' => 'processing']);
+                try {
+                    $recipient =  $request->email ?? $order->user?->email;
+                    if ($recipient) {
+                        \Illuminate\Support\Facades\Mail::to($recipient)->send(new \App\Mail\OrderPlacedEmail($order));
+                    }
+                } catch (\Exception $e) {   
+                    \Illuminate\Support\Facades\Log::error("Failed to send COD order placed email: " . $e->getMessage());
+                }
+            }
+
+            if ($request->payment_method === 'Card') {
+                return redirect()->route('moyasar.pay', $order->id);
+            }
 
             return redirect()->route('customer.orders.show', $order->id)->with('success', __('Order placed successfully!'));
         } catch (\Exception $e) {

@@ -43,6 +43,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        \Illuminate\Support\Facades\Mail::to($user)->send(new \App\Mail\WelcomeEmail($user));
+
         Auth::guard('web')->login($user);
 
         return redirect()->route('customer.profile')->with('success', __('Account created successfully.'));

@@ -14,6 +14,7 @@ Route::get('lang/{locale}', [LocaleController::class, 'setLocale'])->name('lang.
 
 Route::middleware(['locale'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::post('/payment/webhook', [\App\Http\Controllers\MoyasarController::class, 'webhook'])->name('moyasar.webhook');
 
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -34,6 +35,10 @@ Route::middleware(['locale'])->group(function () {
         Route::get('/orders/{id}', [CustomerController::class, 'orderDetails'])->name('customer.orders.show');
         Route::get('/favorites', [CustomerController::class, 'favorites'])->name('customer.favorites');
         Route::post('/favorites/{product}', [App\Http\Controllers\FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
+        // Payment Routes
+        Route::get('/payment/callback', [\App\Http\Controllers\MoyasarController::class, 'callback'])->name('moyasar.callback');
+        Route::get('/payment/{order}', [\App\Http\Controllers\MoyasarController::class, 'pay'])->name('moyasar.pay');
     });
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('guest:admin')->group(function () {

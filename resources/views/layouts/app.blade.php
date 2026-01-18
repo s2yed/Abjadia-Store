@@ -52,6 +52,7 @@
             /* Firefox */
         }
     </style>
+    @stack('styles')
 </head>
 
 <body class="font-sans antialiased">
@@ -128,7 +129,7 @@
         <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden transition-opacity duration-300 opacity-0"></div>
 
         <!-- Mobile Drawer Menu -->
-        <div id="mobile-menu-drawer" class="fixed inset-y-0 ltr:left-0 rtl:right-0 w-64 bg-white z-[70] transform ltr:-translate-x-full rtl:translate-x-full transition-transform duration-300 ease-in-out shadow-xl">
+        <div id="mobile-menu-drawer" class="fixed inset-y-0 ltr:left-0 rtl:right-0 w-64 bg-white z-[70] transform ltr:-translate-x-full rtl:translate-x-full transition-transform duration-300 ease-in-out shadow-xl md:hidden">
             <div class="p-6 h-full flex flex-col">
                 <div class="flex items-center justify-between mb-8">
                     <span class="text-xl font-bold text-primary-dark">{{ __('Menu') }}</span>
@@ -273,6 +274,7 @@
             </div>
         </footer>
     </div>
+    @stack('scripts')
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
