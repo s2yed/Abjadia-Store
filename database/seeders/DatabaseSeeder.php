@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             AuthorSeeder::class,
             ProductSeeder::class,
             BannerSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }

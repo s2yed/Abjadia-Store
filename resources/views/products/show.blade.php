@@ -1,5 +1,41 @@
 @extends('layouts.app')
 
+@section('title')
+{{ $product->seo_title ?: $product->name . ' - ' . config('app.name') }}
+@endsection
+
+@section('meta_description')
+{{ $product->seo_description ?: Str::limit($product->description, 160) }}
+@endsection
+
+@section('meta_keywords')
+{{ $product->seo_keywords ?: ($product->category ? $product->category->name . ', abjadia' : 'abjadia, store') }}
+@endsection
+
+@section('og_image')
+{{ $product->image ? asset($product->image) : asset('images/logo.png') }}
+@endsection
+
+@section('seo')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org/",
+  "@@type": "Product",
+  "name": "{{ $product->name }}",
+  "image": "{{ $product->image ? asset($product->image) : asset('images/logo.png') }}",
+  "description": "{{ $product->seo_description ?: Str::limit($product->description, 250) }}",
+  "sku": "{{ $product->isbn ?: $product->id }}",
+  "offers": {
+    "@@type": "Offer",
+    "url": "{{ url()->current() }}",
+    "priceCurrency": "SAR",
+    "price": "{{ $product->discount_price ?: $product->price }}",
+    "availability": "https://schema.org/{{ $product->stock > 0 ? 'InStock' : 'OutOfStock' }}"
+  }
+}
+</script>
+@endsection
+
 @section('content')
 <div class="bg-white py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -8,9 +44,9 @@
             <div class="flex flex-col-reverse">
                 <div class="w-full aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden sm:aspect-w-2 sm:aspect-h-3">
                     @if($product->image)
-                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover object-center">
+                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover object-center">
                     @else
-                    <div class="w-full h-96 flex items-center justify-center text-gray-400 text-2xl">{{ __('No Image') }}</div>
+                        <div class="w-full h-96 flex items-center justify-center text-gray-400 text-2xl">{{ __('No Image') }}</div>
                     @endif
                 </div>
             </div>
@@ -22,10 +58,10 @@
                 <div class="mt-3">
                     <p class="text-3xl text-gray-900 font-bold text-secondary-orange">
                         @if($product->discount_price)
-                        {{ $product->discount_price }} {{ __('SAR') }}
-                        <span class="text-lg text-gray-400 line-through ml-2">{{ $product->price }} {{ __('SAR') }}</span>
+                            {{ $product->discount_price }} {{ __('SAR') }}
+                            <span class="text-lg text-gray-400 line-through ml-2">{{ $product->price }} {{ __('SAR') }}</span>
                         @else
-                        {{ $product->price }} {{ __('SAR') }}
+                            {{ $product->price }} {{ __('SAR') }}
                         @endif
                     </p>
                 </div>
@@ -90,14 +126,16 @@
         </div>
 
         <!-- Related Products -->
+        @if(isset($relatedProducts) && count($relatedProducts) > 0)
         <div class="mt-16 border-t border-gray-200 pt-10">
             <h2 class="text-2xl font-bold text-primary-dark mb-6">{{ __('Related Products') }}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 @foreach($relatedProducts as $related)
-                <x-product-card :product="$related" />
+                    <x-product-card :product="$related" />
                 @endforeach
             </div>
         </div>
+        @endif
     </div>
 </div>
 @endsection

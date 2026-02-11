@@ -42,6 +42,9 @@ class ProductController extends Controller
             'pages' => 'nullable|integer',
             'stock' => 'required|integer',
             'discount_price' => 'nullable|numeric|lt:price',
+            'seo_title' => 'nullable|array',
+            'seo_description' => 'nullable|array',
+            'seo_keywords' => 'nullable|array',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']['en']);
@@ -63,6 +66,9 @@ class ProductController extends Controller
         $data = $product->toArray();
         $data['name'] = $product->getTranslations('name');
         $data['description'] = $product->getTranslations('description');
+        $data['seo_title'] = $product->getTranslations('seo_title');
+        $data['seo_description'] = $product->getTranslations('seo_description');
+        $data['seo_keywords'] = $product->getTranslations('seo_keywords');
         return response()->json($data);
     }
 
@@ -82,6 +88,9 @@ class ProductController extends Controller
             'pages' => 'nullable|integer',
             'stock' => 'integer',
             'discount_price' => 'nullable|numeric|lt:price',
+            'seo_title' => 'nullable|array',
+            'seo_description' => 'nullable|array',
+            'seo_keywords' => 'nullable|array',
         ]);
 
         if (isset($validated['name']['en'])) {
@@ -103,6 +112,9 @@ class ProductController extends Controller
         $data = $product->toArray();
         $data['name'] = $product->getTranslations('name');
         $data['description'] = $product->getTranslations('description');
+        $data['seo_title'] = $product->getTranslations('seo_title');
+        $data['seo_description'] = $product->getTranslations('seo_description');
+        $data['seo_keywords'] = $product->getTranslations('seo_keywords');
 
         return response()->json($data);
     }

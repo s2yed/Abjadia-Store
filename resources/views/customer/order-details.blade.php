@@ -39,7 +39,7 @@
             <div class="md:col-span-3 space-y-6">
                 <!-- Header & Back -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h2 class="text-2xl font-bold text-gray-800">{{ __('Order # :id details', ['id' => $order->id]) }}</h2>
+                    <h1 class="text-2xl font-bold text-gray-800">{{ __('Order # :id details', ['id' => $order->id]) }}</h1>
                     <a href="{{ route('customer.orders') }}" class="text-gray-500 hover:text-secondary-orange transition-colors flex items-center text-sm font-medium">
                         <span class="rtl:hidden">&larr;</span>
                         <span class="hidden rtl:inline">&rarr;</span>

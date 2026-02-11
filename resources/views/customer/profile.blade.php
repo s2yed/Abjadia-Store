@@ -53,7 +53,7 @@
                 <div class="bg-white shadow overflow-hidden sm:rounded-lg">
                     <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
                         <div>
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Profile Information') }}</h3>
+                            <h1 class="text-lg leading-6 font-medium text-gray-900">{{ __('Profile Information') }}</h1>
                             <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ __('Personal details and account settings.') }}</p>
                         </div>
                         <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-secondary-orange">

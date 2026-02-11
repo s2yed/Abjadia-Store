@@ -52,7 +52,7 @@
             <div class="lg:col-span-9">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 border-b border-gray-200">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">{{ __('My Orders') }}</h2>
+                        <h1 class="text-xl font-bold text-gray-800 mb-4">{{ __('My Orders') }}</h1>
 
                         @if($orders->count() > 0)
                         <div class="space-y-4">

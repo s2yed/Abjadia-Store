@@ -6,7 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', __('Abjadia Store')) }}</title>
+    @if($settings && $settings->favicon)
+        <link rel="icon" href="{{ asset($settings->favicon) }}">
+    @else
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    @endif
+
+    <title>@yield('title', ($settings && $settings->site_name) ? $settings->site_name : config('app.name', __('Abjadia Store')))</title>
+    <meta name="description" content="@yield('meta_description', ($settings && $settings->site_description) ? $settings->site_description : __('Your one-stop shop for books and school supplies.'))">
+    <meta name="keywords" content="@yield('meta_keywords', ($settings && $settings->site_keywords) ? $settings->site_keywords : 'books, stationery, school supplies, abjadia')">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', ($settings && $settings->site_name) ? $settings->site_name : config('app.name', __('Abjadia Store')))">
+    <meta property="og:description" content="@yield('meta_description', ($settings && $settings->site_description) ? $settings->site_description : __('Your one-stop shop for books and school supplies.'))">
+    <meta property="og:image" content="@yield('og_image', ($settings && $settings->logo) ? asset($settings->logo) : asset('images/logo.png'))">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="@yield('title', ($settings && $settings->site_name) ? $settings->site_name : config('app.name', __('Abjadia Store')))">
+    <meta property="twitter:description" content="@yield('meta_description', ($settings && $settings->site_description) ? $settings->site_description : __('Your one-stop shop for books and school supplies.'))">
+    <meta property="twitter:image" content="@yield('og_image', ($settings && $settings->logo) ? asset($settings->logo) : asset('images/logo.png'))">
+
+    @yield('seo')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,6 +80,21 @@
 </head>
 
 <body class="font-sans antialiased">
+    <!-- DIAGNOSTIC: layouts.app is active -->
+    <div id="diagnostic-layout-active" style="display:none;"></div>
+    {{-- Floating WhatsApp Chat --}}
+    @if($settings && $settings->whatsapp_number)
+    <div class="fixed bottom-6 left-6 z-50">
+        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings->whatsapp_number) }}" 
+           target="_blank" 
+           class="flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#128C7E] transition-all hover:scale-110 group focus:outline-none"
+           title="{{ __('Contact us on WhatsApp') }}">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.448-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.439 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+            </svg>
+        </a>
+    </div>
+    @endif
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
         <header class="bg-white shadow-sm sticky top-0 z-50">
@@ -68,8 +107,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
-                        <a href="{{ route('home') }}" class="text-2xl font-bold text-primary-dark">
-                            {{ __('Abjadia') }}
+                        <a href="{{ route('home') }}">
+                            @if($settings && $settings->logo)
+                                <img class="h-10 w-auto" src="{{ asset($settings->logo) }}" alt="{{ ($settings && $settings->site_name) ? $settings->site_name : __('Abjadia Store') }}">
+                            @else
+                                <h1 class="text-2xl font-bold text-secondary-orange">{{ __('Abjadia') }}</h1>
+                            @endif
                         </a>
                     </div>
 
@@ -246,26 +289,73 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
-                        <h3 class="text-xl font-bold mb-4">{{ __('Abjadia Store') }}</h3>
-                        <p class="text-gray-300 text-sm">{{ __('Your one-stop shop for books and school supplies.') }}</p>
+                        <h3 class="text-xl font-bold mb-4">{{ ($settings && $settings->site_name) ? $settings->site_name : __('Abjadia Store') }}</h3>
+                        <p class="text-gray-300 text-sm">{{ ($settings && $settings->site_description) ? $settings->site_description : __('Your one-stop shop for books and school supplies.') }}</p>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-4">{{ __('Quick Links') }}</h4>
                         <ul class="space-y-2 text-sm text-gray-300">
-                            <li><a href="#" class="hover:text-secondary-orange">{{ __('About Us') }}</a></li>
-                            <li><a href="#" class="hover:text-secondary-orange">{{ __('Contact Us') }}</a></li>
+                            <li><a href="{{ route('pages.show', 'about-us') }}" class="hover:text-secondary-orange">{{ __('About Us') }}</a></li>
+                            <li><a href="{{ route('pages.show', 'contact-us') }}" class="hover:text-secondary-orange">{{ __('Contact Us') }}</a></li>
+                            <li><a href="#" class="hover:text-secondary-orange">{{ __('Terms of Service') }}</a></li>
+                            <li><a href="#" class="hover:text-secondary-orange">{{ __('Privacy Policy') }}</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-4">{{ __('Categories') }}</h4>
                         <ul class="space-y-2 text-sm text-gray-300">
-                            <li><a href="#" class="hover:text-secondary-orange">{{ __('Books') }}</a></li>
-                            <li><a href="#" class="hover:text-secondary-orange">{{ __('School Supplies') }}</a></li>
+                            @if(isset($categories) && count($categories) > 0)
+                                @foreach($categories->take(5) as $footerCategory)
+                                    <li><a href="{{ route('products.index', ['category' => $footerCategory->slug]) }}" class="hover:text-secondary-orange">{{ $footerCategory->name }}</a></li>
+                                @endforeach
+                            @endif
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold mb-4">{{ __('Contact') }}</h4>
-                        <p class="text-sm text-gray-300">info@abjadia.com</p>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            @if($settings && $settings->contact_email)
+                                <li class="flex items-center">
+                                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    <a href="mailto:{{ $settings->contact_email }}" class="hover:text-secondary-orange transition-colors">{{ $settings->contact_email }}</a>
+                                </li>
+                            @endif
+                            @if($settings && $settings->contact_phone)
+                                <li class="flex items-center">
+                                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                                    <a href="tel:{{ preg_replace('/[^0-9\+]/', '', $settings->contact_phone) }}" class="hover:text-secondary-orange transition-colors">{{ $settings->contact_phone }}</a>
+                                </li>
+                            @endif
+                            @if($settings && $settings->whatsapp_number)
+                                <li class="flex items-center">
+                                    <svg class="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings->whatsapp_number) }}" class="hover:text-secondary-orange transition-colors" target="_blank">{{ $settings->whatsapp_number }}</a>
+                                </li>
+                            @endif
+                        </ul>
+
+                        @if($settings && ($settings->social_facebook || $settings->social_twitter || $settings->social_instagram || $settings->social_linkedin || $settings->social_snapchat || $settings->social_youtube))
+                        <div class="mt-4 flex flex-wrap gap-4">
+                            @if($settings->social_facebook)
+                                <a href="{{ $settings->social_facebook }}" class="text-gray-400 hover:text-white" target="_blank"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>
+                            @endif
+                            @if($settings->social_twitter)
+                                <a href="{{ $settings->social_twitter }}" class="text-gray-400 hover:text-white" target="_blank"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+                            @endif
+                            @if($settings->social_instagram)
+                                <a href="{{ $settings->social_instagram }}" class="text-gray-400 hover:text-white" target="_blank"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.353 2.612 6.748 6.973 6.947 1.28.058 1.688.072 4.947.072s3.667-.014 4.948-.072c4.351-.2 6.748-2.612 6.947-6.947.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.2-4.349-2.612-6.748-6.973-6.947C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                            @endif
+                            @if($settings->social_linkedin)
+                                <a href="{{ $settings->social_linkedin }}" class="text-gray-400 hover:text-white" target="_blank"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+                            @endif
+                            @if($settings->social_snapchat)
+                                <a href="{{ $settings->social_snapchat }}" class="text-gray-400 hover:text-white" target="_blank"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.116 2.072C7.304 2.072 5.093 5.378 5.093 7.643c0 .762.247 1.492.68 2.091a.243.243 0 01.036.216.242.242 0 01-.161.152c-2.336.7-4.156 2.83-4.156 5.631 0 .298.242.54.54.54.408 0 .81-.03 1.203-.087a.241.241 0 01.198.05.241.241 0 01.077.194c.05 1.267.973 2.492 1.096 2.662.13.172.33.275.545.275.093 0 .185-.018.273-.054l2.257-.903a.242.242 0 01.272.046c1.1.921 2.536 1.428 4.04 1.428s2.94-.507 4.04-1.428a.242.242 0 01.272-.046l2.257.903c.088.036.18.054.273.054.215 0 .415-.103.545-.275.123-.17 1.046-1.395 1.096-2.662.01-.264.1-.493.3-.655a.242.242 0 01.245-.028c1.6.666 3.425.666 5.025.04a.242.242 0 00.15-.224 5.352 5.352 0 00-4.156-5.631.242.242 0 01-.161-.152.243.243 0 01.036-.216c.433-.6.68-1.33.68-2.091 0-2.265-2.21-5.571-7.022-5.571z"/></svg></a>
+                            @endif
+                            @if($settings->social_youtube)
+                                <a href="{{ $settings->social_youtube }}" class="text-gray-400 hover:text-white" target="_blank"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186c-.272-1.018-1.074-1.821-2.091-2.093-1.841-.493-9.407-.493-9.407-.493s-7.567 0-9.407.493c-1.017.272-1.819 1.075-2.091 2.093-.501 1.868-.501 5.753-.501 5.753s0 3.886.501 5.754c.272 1.017 1.074 1.819 2.091 2.092 1.841.493 9.407.493 9.407.493s7.567 0 9.407-.493c1.017-.273 1.819-1.075 2.091-2.092.501-1.868.501-5.754.501-5.754s0-3.885-.501-5.753zm-14.165 9.382v-6.914l6.059 3.457-6.059 3.457z"/></svg></a>
+                            @endif
+                        </div>
+                        @endif
                     </div>
                 </div>
                 <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm text-gray-400">

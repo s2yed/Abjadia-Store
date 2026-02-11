@@ -9,6 +9,7 @@ import CategoryList from './components/categories/CategoryList.vue';
 
 import UsersList from './components/users/UsersList.vue';
 import CustomersList from './components/customers/CustomersList.vue';
+import SiteSettings from './components/settings/SiteSettings.vue';
 
 // Placeholder components - will be replaced by actual files later
 import DashboardHome from './components/DashboardHome.vue';
@@ -83,6 +84,26 @@ const routes = [
         path: '/dashboard/banners/:id/edit', 
         name: 'BannerEdit', 
         component: BannerForm 
+    },
+    {
+        path: '/dashboard/settings',
+        name: 'SiteSettings',
+        component: SiteSettings
+    },
+    {
+        path: '/dashboard/pages',
+        name: 'Pages',
+        component: () => import('./components/admin/pages/PagesList.vue')
+    },
+    {
+        path: '/dashboard/pages/create',
+        name: 'PageCreate',
+        component: () => import('./components/admin/pages/PageForm.vue')
+    },
+    {
+        path: '/dashboard/pages/:id/edit',
+        name: 'PageEdit',
+        component: () => import('./components/admin/pages/PageForm.vue')
     },
 ];
 

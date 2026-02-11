@@ -228,6 +228,109 @@
                 </div>
             </div>
 
+            <!-- SEO Settings -->
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-secondary-orange" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.450 1.348l.41.411-2.454 2.454L7.541 5.405a1 1 0 00-1.414 0l-4 4a1 1 0 101.414 1.414L7.126 7.235l1.36 1.36a1 1 0 001.414 0l3.033-3.034.41.41a1 1 0 001.348-1.45l-1.93-1.93a1 1 0 001.36-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ $t('seo_settings') }}
+                </h3>
+                <p class="text-xs text-gray-500 mb-4">{{ $t('seo_help') }}</p>
+
+                <div class="space-y-6">
+                    <!-- SEO Title -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('seo_title_en') }}</label>
+                            <input
+                                v-model="form.seo_title.en"
+                                type="text"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 rtl:text-right" dir="auto">{{ $t('seo_title_ar') }}</label>
+                            <input
+                                v-model="form.seo_title.ar"
+                                type="text"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2 rtl:text-right"
+                                dir="rtl"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- SEO Description -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('seo_description_en') }}</label>
+                            <textarea
+                                v-model="form.seo_description.en"
+                                rows="2"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
+                            ></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 rtl:text-right" dir="auto">{{ $t('seo_description_ar') }}</label>
+                            <textarea
+                                v-model="form.seo_description.ar"
+                                rows="2"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2 rtl:text-right"
+                                dir="rtl"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <!-- SEO Keywords -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('seo_keywords_en') }}</label>
+                            <div class="mt-1 flex flex-wrap gap-2 p-2 border rounded-md border-gray-300 bg-white focus-within:ring-secondary-orange focus-within:border-secondary-orange shadow-sm min-h-[42px]">
+                                <span v-for="(tag, index) in keywordsEn" :key="index" 
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ tag }}
+                                    <button @click="removeTag('en', index)" type="button" class="ml-1.5 inline-flex flex-shrink-0 h-4 w-4 rounded-full items-center justify-center text-blue-400 hover:bg-blue-200 hover:text-blue-500 focus:outline-none focus:bg-blue-500 focus:text-white">
+                                        <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                            <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                        </svg>
+                                    </button>
+                                </span>
+                                <input
+                                    v-model="keywordInputEn"
+                                    type="text"
+                                    :placeholder="keywordsEn.length === 0 ? 'keyword1, keyword2...' : ''"
+                                    @keydown="handleKeydown($event, 'en')"
+                                    @blur="addTag('en')"
+                                    class="flex-1 min-w-[120px] outline-none border-none focus:ring-0 p-0 text-sm"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 rtl:text-right" dir="auto">{{ $t('seo_keywords_ar') }}</label>
+                            <div class="mt-1 flex flex-wrap gap-2 p-2 border rounded-md border-gray-300 bg-white focus-within:ring-secondary-orange focus-within:border-secondary-orange shadow-sm min-h-[42px] rtl:flex-row-reverse" dir="rtl">
+                                <span v-for="(tag, index) in keywordsAr" :key="index" 
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    {{ tag }}
+                                    <button @click="removeTag('ar', index)" type="button" class="mx-1.5 inline-flex flex-shrink-0 h-4 w-4 rounded-full items-center justify-center text-green-400 hover:bg-green-200 hover:text-green-500 focus:outline-none focus:bg-green-500 focus:text-white">
+                                        <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                            <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                        </svg>
+                                    </button>
+                                </span>
+                                <input
+                                    v-model="keywordInputAr"
+                                    type="text"
+                                    :placeholder="keywordsAr.length === 0 ? 'كلمة1, كلمة2...' : ''"
+                                    @keydown="handleKeydown($event, 'ar')"
+                                    @blur="addTag('ar')"
+                                    class="flex-1 min-w-[120px] outline-none border-none focus:ring-0 p-0 text-sm rtl:text-right"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-8 flex justify-end">
                 <button
                     type="button"
@@ -278,6 +381,9 @@ export default {
             discount_price: "",
             stock: 0,
             description: { en: "", ar: "" },
+            seo_title: { en: "", ar: "" },
+            seo_description: { en: "", ar: "" },
+            seo_keywords: { en: "", ar: "" },
             // Book specifics
             isbn: "",
             publisher: "",
@@ -286,6 +392,44 @@ export default {
             brand_id: null,
             image: null,
         });
+
+        const keywordInputEn = ref("");
+        const keywordInputAr = ref("");
+
+        const keywordsEn = computed({
+            get: () => form.seo_keywords.en ? form.seo_keywords.en.split(',').map(s => s.trim()).filter(s => s) : [],
+            set: (val) => form.seo_keywords.en = val.join(', ')
+        });
+
+        const keywordsAr = computed({
+            get: () => form.seo_keywords.ar ? form.seo_keywords.ar.split(',').map(s => s.trim()).filter(s => s) : [],
+            set: (val) => form.seo_keywords.ar = val.join(', ')
+        });
+
+        const addTag = (locale) => {
+            const input = locale === 'en' ? keywordInputEn : keywordInputAr;
+            const keywords = locale === 'en' ? keywordsEn : keywordsAr;
+            
+            let val = input.value.trim().replace(/,$/, '');
+            if (val && !keywords.value.includes(val)) {
+                keywords.value = [...keywords.value, val];
+            }
+            input.value = "";
+        };
+
+        const removeTag = (locale, index) => {
+            const keywords = locale === 'en' ? keywordsEn : keywordsAr;
+            const updated = [...keywords.value];
+            updated.splice(index, 1);
+            keywords.value = updated;
+        };
+
+        const handleKeydown = (e, locale) => {
+            if (e.key === ',' || e.key === 'Enter') {
+                e.preventDefault();
+                addTag(locale);
+            }
+        };
 
         const categories = ref([]);
         const brands = ref([]);
@@ -322,6 +466,9 @@ export default {
                 // Handle translations
                 data.name = data.name || { en: "", ar: "" };
                 data.description = data.description || { en: "", ar: "" };
+                data.seo_title = data.seo_title || { en: "", ar: "" };
+                data.seo_description = data.seo_description || { en: "", ar: "" };
+                data.seo_keywords = data.seo_keywords || { en: "", ar: "" };
                 
                 Object.assign(form, data);
                 if (data.image) {
@@ -345,6 +492,12 @@ export default {
             
             if (form.description.en) formData.append('description[en]', form.description.en);
             if (form.description.ar) formData.append('description[ar]', form.description.ar);
+
+            // Handle SEO Translations
+            ['seo_title', 'seo_description', 'seo_keywords'].forEach(field => {
+                if (form[field].en) formData.append(`${field}[en]`, form[field].en);
+                if (form[field].ar) formData.append(`${field}[ar]`, form[field].ar);
+            });
 
             // Handle Regular Fields
             const regularFields = ['slug', 'type', 'category_id', 'price', 'discount_price', 'stock', 'isbn', 'publisher', 'pages', 'brand_id'];
@@ -397,7 +550,14 @@ export default {
             brands,
             submitForm,
             previewImage,
-            handleImageUpload
+            handleImageUpload,
+            keywordsEn,
+            keywordsAr,
+            keywordInputEn,
+            keywordInputAr,
+            removeTag,
+            handleKeydown,
+            addTag
         };
     },
 };

@@ -60,6 +60,20 @@
                 >
                     <span :class="currentLocale === 'ar' ? 'ml-3' : 'mr-3'">🖼️</span> {{ $t('banners') }}
                 </router-link>
+                <router-link
+                    to="/dashboard/pages"
+                    class="flex items-center py-2.5 px-4 rounded hover:bg-gray-800 transition-colors"
+                    exact-active-class="bg-gray-800 text-secondary-orange"
+                >
+                    <span :class="currentLocale === 'ar' ? 'ml-3' : 'mr-3'">📄</span> {{ $t('pages') }}
+                </router-link>
+                <router-link
+                    to="/dashboard/settings"
+                    class="flex items-center py-2.5 px-4 rounded hover:bg-gray-800 transition-colors"
+                    exact-active-class="bg-gray-800 text-secondary-orange"
+                >
+                    <span :class="currentLocale === 'ar' ? 'ml-3' : 'mr-3'">⚙️</span> {{ $t('site_settings') }}
+                </router-link>
             </nav>
             <div class="p-4 border-t border-gray-800">
                 <a

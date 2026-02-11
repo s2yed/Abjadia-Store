@@ -5,7 +5,7 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white shadow-lg rounded-lg overflow-hidden">
             <div class="p-6 border-b border-gray-200">
-                <h2 class="text-2xl font-bold text-gray-900 text-center">{{ __('Complete Your Payment') }}</h2>
+                <h1 class="text-2xl font-bold text-gray-900 text-center">{{ __('Complete Your Payment') }}</h1>
             </div>
             
             <div class="p-8">

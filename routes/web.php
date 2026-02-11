@@ -82,7 +82,16 @@ Route::middleware(['locale'])->group(function () {
         Route::apiResource('banners', \App\Http\Controllers\Api\BannerController::class);
         Route::get('brands', [\App\Http\Controllers\Api\BrandController::class, 'index'])->name('brands.index');
         Route::get('dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats'])->name('dashboard.stats');
+        
+        // Settings
+        Route::get('settings', [\App\Http\Controllers\Api\SettingController::class, 'index'])->name('settings.index');
+        Route::post('settings', [\App\Http\Controllers\Api\SettingController::class, 'update'])->name('settings.update');
+
+        // Pages
+        Route::apiResource('pages', \App\Http\Controllers\Api\PageController::class);
     });
+
+    Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
 
     require __DIR__ . '/auth.php';
 });

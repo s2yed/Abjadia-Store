@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', __('Abjadia Store - Books and School Supplies'))
+@section('meta_description', __('Discover a wide range of books, stationery, and school essentials at Abjadia Store. Everything you need for academic success.'))
+@section('meta_keywords', 'abjadia, books, school supplies, stationery, kids books, educational supplies')
+
 @section('content')
 <!-- Hero Section with Swiper -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -75,7 +79,7 @@
                 <!-- Overlay Text (Optional) -->
                 @if($banner->title || $banner->description)
                 <div class="slide-content-overlay">
-                    <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 opacity-0 translate-y-4 transition-all duration-700 delay-300 transform">{{ $banner->title }}</h1>
+                    <{{ $loop->first ? 'h1' : 'p' }} class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 opacity-0 translate-y-4 transition-all duration-700 delay-300 transform">{{ $banner->title }}</{{ $loop->first ? 'h1' : 'p' }}>
                     @if($banner->description)
                     <p class="text-lg md:text-2xl text-gray-200 mb-8 max-w-2xl opacity-0 translate-y-4 transition-all duration-700 delay-500 transform">{{ $banner->description }}</p>
                     @endif
@@ -175,7 +179,7 @@
         <h2 class="text-2xl font-bold mb-8 text-gray-900">{{ __('Browse by Category') }}</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             @foreach($categories as $category)
-            <a href="#" class="group block text-center">
+            <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group block text-center">
                 <div class="bg-gray-100 rounded-lg p-6 mb-4 transition transform group-hover:-translate-y-1 group-hover:shadow-lg h-32 flex items-center justify-center">
                     @if($category->image)
                     <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="h-24 w-24 object-contain">
