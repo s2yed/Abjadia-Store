@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PageController extends Controller
 {
@@ -22,15 +23,21 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'slug' => 'required|unique:pages,slug',
             'title' => 'required|array',
             'content' => 'required|array',
             'meta_description' => 'nullable|array',
+            'image' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
         ]);
 
-        $page = Page::create($request->all());
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('pages', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        $page = Page::create($validated);
 
         return response()->json($page, 201);
     }
@@ -51,15 +58,25 @@ class PageController extends Controller
     {
         $page = Page::findOrFail($id);
 
-        $request->validate([
+        $validated = $request->validate([
             'slug' => 'required|unique:pages,slug,' . $id,
             'title' => 'required|array',
             'content' => 'required|array',
             'meta_description' => 'nullable|array',
+            'image' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
         ]);
 
-        $page->update($request->all());
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($page->image_path) {
+                Storage::disk('public')->delete($page->image_path);
+            }
+            $path = $request->file('image')->store('pages', 'public');
+            $validated['image_path'] = $path;
+        }
+
+        $page->update($validated);
 
         return response()->json($page);
     }
@@ -70,6 +87,11 @@ class PageController extends Controller
     public function destroy(string $id)
     {
         $page = Page::findOrFail($id);
+
+        if ($page->image_path) {
+            Storage::disk('public')->delete($page->image_path);
+        }
+
         $page->delete();
 
         return response()->json(null, 204);

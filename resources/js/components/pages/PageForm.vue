@@ -58,6 +58,29 @@
                     </div>
                 </div>
 
+                <!-- Page Image -->
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <h4 class="font-medium text-gray-700 mb-3 flex items-center">
+                        Feature Image
+                    </h4>
+                    <div class="space-y-4">
+                        <div v-if="previewImage" class="mb-2">
+                             <img :src="previewImage" class="h-48 w-full object-cover rounded-lg border shadow-sm" />
+                        </div>
+                        <input
+                            type="file"
+                            @change="handleImageUpload"
+                            accept="image/*"
+                            class="mt-1 block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100"
+                        />
+                    </div>
+                </div>
+
                 <!-- Slug -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Slug</label>
@@ -99,14 +122,24 @@ const route = useRoute();
 const router = useRouter();
 const loading = ref(false);
 const isEdit = ref(false);
+const previewImage = ref(null);
 
 const form = reactive({
     title: { ar: '', en: '' },
     slug: '',
     content: { ar: '', en: '' },
     meta_description: { ar: '', en: '' },
-    is_active: true
+    is_active: true,
+    image: null
 });
+
+const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        form.image = file;
+        previewImage.value = URL.createObjectURL(file);
+    }
+};
 
 const fetchPage = async (id) => {
     try {
@@ -124,8 +157,11 @@ const fetchPage = async (id) => {
         form.content = getTrans(data.content);
         form.meta_description = getTrans(data.meta_description);
         form.slug = data.slug || '';
-        // Ensure is_active is boolean
         form.is_active = !!data.is_active;
+
+        if (data.image_path) {
+            previewImage.value = `/storage/${data.image_path}`;
+        }
     } catch (error) {
         console.error('Error fetching page:', error);
     }
@@ -134,15 +170,47 @@ const fetchPage = async (id) => {
 const savePage = async () => {
     loading.value = true;
     try {
+        const formData = new FormData();
+        
+        // Handle translations
+        formData.append('title[ar]', form.title.ar);
+        formData.append('title[en]', form.title.en);
+        formData.append('content[ar]', form.content.ar);
+        formData.append('content[en]', form.content.en);
+        formData.append('meta_description[ar]', form.meta_description.ar);
+        formData.append('meta_description[en]', form.meta_description.en);
+        
+        // Regular fields
+        formData.append('slug', form.slug);
+        formData.append('is_active', form.is_active ? 1 : 0);
+        
+        if (form.image instanceof File) {
+            formData.append('image', form.image);
+        }
+
         if (isEdit.value) {
-            await axios.put(`/api/pages/${route.params.id}`, form);
+            formData.append('_method', 'PUT');
+            await axios.post(`/api/pages/${route.params.id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         } else {
-            await axios.post('/api/pages', form);
+            await axios.post('/api/pages', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         }
         router.push('/dashboard/pages');
     } catch (error) {
         console.error('Error saving page:', error);
-        alert('Failed to save page');
+        if (error.response && error.response.data && error.response.data.errors) {
+            const errors = error.response.data.errors;
+            let message = 'Validation errors:\n';
+            Object.keys(errors).forEach(key => {
+                message += `${key}: ${errors[key].join(', ')}\n`;
+            });
+            alert(message);
+        } else {
+            alert('Failed to save page');
+        }
     } finally {
         loading.value = false;
     }
