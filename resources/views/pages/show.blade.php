@@ -27,7 +27,7 @@
 
         <div class="px-6 py-8 sm:p-10 lg:p-12">
             <!-- Article Content -->
-            <article class="prose prose-lg prose-slate dark:prose-invert mx-auto max-w-none">
+            <article class="prose mx-auto max-w-none">
                 {!! $page->content !!}
             </article>
         </div>
