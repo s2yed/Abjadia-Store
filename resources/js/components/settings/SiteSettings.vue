@@ -110,6 +110,11 @@
                             <input type="text" v-model="form.whatsapp_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
                         </div>
                     </div>
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('currency') }}</label>
+                        <input type="text" v-model="form.currency" placeholder="SAR" maxlength="10" class="mt-1 block w-full sm:w-1/3 border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
+                        <p class="mt-1 text-sm text-gray-500">{{ $t('currency_hint') }}</p>
+                    </div>
                 </div>
 
                 <!-- Social Links Section -->
@@ -147,6 +152,7 @@ const form = reactive({
     contact_email: '',
     contact_phone: '',
     whatsapp_number: '',
+    currency: 'SAR',
     social_facebook: '',
     social_twitter: '',
     social_instagram: '',

@@ -18,6 +18,7 @@ class Setting extends Model
         'contact_email',
         'contact_phone',
         'whatsapp_number',
+        'currency',
         'social_facebook',
         'social_twitter',
         'social_instagram',

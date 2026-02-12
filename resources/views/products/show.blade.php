@@ -59,9 +59,9 @@
                     <p class="text-3xl text-gray-900 font-bold text-secondary-orange">
                         @if($product->discount_price)
                             {{ $product->discount_price }} {{ __('SAR') }}
-                            <span class="text-lg text-gray-400 line-through ml-2">{{ $product->price }} {{ __('SAR') }}</span>
+                            <span class="text-lg text-gray-400 line-through ml-2">{{ $product->price }} {{ settings('currency', 'SAR') }}</span>
                         @else
-                            {{ $product->price }} {{ __('SAR') }}
+                            {{ $product->price }} {{ settings('currency', 'SAR') }}
                         @endif
                     </p>
                 </div>

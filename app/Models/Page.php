@@ -10,12 +10,13 @@ class Page extends Model
 {
     use HasFactory, HasTranslations;
 
-    public $translatable = ['title', 'content'];
+    public $translatable = ['title', 'content', 'meta_description'];
 
     protected $fillable = [
         'slug',
         'title',
         'content',
+        'meta_description',
         'is_active',
     ];
 }

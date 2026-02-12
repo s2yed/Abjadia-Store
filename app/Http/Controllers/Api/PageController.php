@@ -26,6 +26,8 @@ class PageController extends Controller
             'slug' => 'required|unique:pages,slug',
             'title' => 'required|array',
             'content' => 'required|array',
+            'meta_description' => 'nullable|array',
+            'is_active' => 'boolean',
         ]);
 
         $page = Page::create($request->all());
@@ -53,6 +55,7 @@ class PageController extends Controller
             'slug' => 'required|unique:pages,slug,' . $id,
             'title' => 'required|array',
             'content' => 'required|array',
+            'meta_description' => 'nullable|array',
             'is_active' => 'boolean',
         ]);
 

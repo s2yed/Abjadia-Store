@@ -30,6 +30,7 @@ class SettingSeeder extends Seeder
                 'contact_email' => 'info@abjadia.com',
                 'contact_phone' => '+966123456789',
                 'whatsapp_number' => '+966123456789',
+                'currency' => 'SAR',
                 'social_facebook' => 'https://facebook.com/abjadianstore',
                 'social_twitter' => 'https://twitter.com/abjadianstore',
                 'social_instagram' => 'https://instagram.com/abjadianstore',

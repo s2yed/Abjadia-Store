@@ -93,17 +93,17 @@ const routes = [
     {
         path: '/dashboard/pages',
         name: 'Pages',
-        component: () => import('./components/admin/pages/PagesList.vue')
+        component: () => import('./components/pages/PageList.vue')
     },
     {
         path: '/dashboard/pages/create',
         name: 'PageCreate',
-        component: () => import('./components/admin/pages/PageForm.vue')
+        component: () => import('./components/pages/PageForm.vue')
     },
     {
         path: '/dashboard/pages/:id/edit',
         name: 'PageEdit',
-        component: () => import('./components/admin/pages/PageForm.vue')
+        component: () => import('./components/pages/PageForm.vue')
     },
 ];
 

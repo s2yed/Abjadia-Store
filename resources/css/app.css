@@ -12,3 +12,53 @@
     --color-primary-dark: #2c3e50;
     --color-secondary-orange: #e67e22;
 }
+
+/* Custom Typography Styles (Fallback for missing plugin) */
+.prose {
+    color: var(--color-gray-700);
+    max-width: 65ch;
+}
+.dark .prose {
+    color: var(--color-gray-300);
+}
+.prose p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    line-height: 1.75;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: var(--color-gray-900);
+    font-weight: 700;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    line-height: 1.3333333;
+}
+.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4 {
+    color: var(--color-white);
+}
+.prose ul, .prose ol {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-left: 1.625em;
+    list-style-type: disc;
+}
+.rtl .prose ul, .rtl .prose ol {
+    padding-left: 0;
+    padding-right: 1.625em;
+}
+.prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.prose a {
+    color: var(--color-secondary-orange);
+    text-decoration: underline;
+    font-weight: 500;
+}
+.prose strong {
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+.dark .prose strong {
+    color: var(--color-white);
+}

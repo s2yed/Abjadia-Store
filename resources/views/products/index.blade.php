@@ -1,3 +1,4 @@
+{{-- Updated: 2026-02-12 01:25 - Mobile Filter Fixed --}}
 @extends('layouts.app')
 
 @section('content')
@@ -18,7 +19,7 @@
                 </button>
 
                 <!-- Filter Drawer Overlay -->
-                <div id="mobile-filter-overlay" onclick="closeMobileFilter()" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
+                <div id="mobile-filter-overlay" onclick="closeMobileFilter()" class="fixed inset-0 bg-black bg-opacity-30 z-40 hidden transition-opacity duration-300 opacity-0"></div>
 
                 <!-- Filter Drawer Content (Centered Modal) -->
                 <div id="mobile-filter-drawer" class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none hidden opacity-0 transition-opacity duration-300 ease-in-out">
