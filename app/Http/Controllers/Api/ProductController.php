@@ -11,7 +11,15 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'brand']);
+        if ($request->has('list_only')) {
+            $products = Product::select('id', 'name')->get();
+            // Transform to ensure translations are available if needed,
+            // though standard toArray() usually handles it.
+            // We return strictly 'data' key to match pagination structure for frontend
+            return response()->json(['data' => $products]);
+        }
+
+        $query = Product::with(['category', 'brand', 'publisher', 'authors', 'translators']);
 
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -19,12 +27,14 @@ class ProductController extends Controller
             $query->where("name->{$locale}", 'like', "%{$search}%");
         }
 
-        $products = $query->paginate(10);
+        $perPage = $request->input('per_page', 10);
+        $products = $query->paginate($perPage);
         return response()->json($products);
     }
 
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Log::info('Product store request', $request->all());
         $validated = $request->validate([
             'name' => 'required|array',
             'name.en' => 'required|string|max:255',
@@ -33,15 +43,20 @@ class ProductController extends Controller
             'description.en' => 'nullable|string',
             'description.ar' => 'nullable|string',
             'price' => 'required|numeric',
+            'discount_price' => 'nullable|numeric',
+            'stock' => 'required|integer',
             'category_id' => 'required|exists:categories,id',
             'type' => 'required|in:book,supply',
             'image' => 'nullable|image|max:2048',
             'brand_id' => 'nullable|exists:brands,id',
             'isbn' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
+            'publisher_id' => 'nullable|exists:publishers,id',
+            'authors' => 'nullable|array',
+            'authors.*' => 'exists:authors,id',
+            'translators' => 'nullable|array',
+            'translators.*' => 'exists:translators,id',
+            'publication_year' => 'nullable|integer',
             'pages' => 'nullable|integer',
-            'stock' => 'required|integer',
-            'discount_price' => 'nullable|numeric|lt:price',
             'seo_title' => 'nullable|array',
             'seo_description' => 'nullable|array',
             'seo_keywords' => 'nullable|array',
@@ -50,18 +65,26 @@ class ProductController extends Controller
         $validated['slug'] = Str::slug($validated['name']['en']);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $validated['image'] = $path; // Store relative path
+            $path = $request->file('image')->store('images/products', 'public');
+            $validated['image'] = $path; // Store relative path starting with images/
         }
 
         $product = Product::create($validated);
+
+        if ($request->has('authors')) {
+            $product->authors()->sync($request->authors);
+        }
+
+        if ($request->has('translators')) {
+            $product->translators()->sync($request->translators);
+        }
 
         return response()->json($product, 201);
     }
 
     public function show(Product $product)
     {
-        $product->load(['category', 'brand', 'variants', 'authors']);
+        $product->load(['category', 'brand', 'variants', 'authors', 'translators', 'publisher']);
         // Inject translations for editing
         $data = $product->toArray();
         $data['name'] = $product->getTranslations('name');
@@ -74,20 +97,26 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        \Illuminate\Support\Facades\Log::info('Product update request', $request->all());
         $validated = $request->validate([
             'name' => 'array',
             'name.en' => 'string|max:255',
             'name.ar' => 'nullable|string|max:255',
             'description' => 'array',
             'price' => 'numeric',
+            'discount_price' => 'nullable|numeric',
+            'stock' => 'integer',
             'category_id' => 'exists:categories,id',
             'image' => 'nullable|image|max:2048',
             'brand_id' => 'nullable|exists:brands,id',
             'isbn' => 'nullable|string|max:255',
-            'publisher' => 'nullable|string|max:255',
+            'publisher_id' => 'nullable|exists:publishers,id',
+            'authors' => 'nullable|array',
+            'authors.*' => 'exists:authors,id',
+            'translators' => 'nullable|array',
+            'translators.*' => 'exists:translators,id',
+            'publication_year' => 'nullable|integer',
             'pages' => 'nullable|integer',
-            'stock' => 'integer',
-            'discount_price' => 'nullable|numeric|lt:price',
             'seo_title' => 'nullable|array',
             'seo_description' => 'nullable|array',
             'seo_keywords' => 'nullable|array',
@@ -102,11 +131,19 @@ class ProductController extends Controller
             if ($product->image) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($product->image);
             }
-            $path = $request->file('image')->store('products', 'public');
+            $path = $request->file('image')->store('images/products', 'public');
             $validated['image'] = $path;
         }
 
         $product->update($validated);
+
+        if ($request->has('authors')) {
+            $product->authors()->sync($request->authors);
+        }
+
+        if ($request->has('translators')) {
+            $product->translators()->sync($request->translators);
+        }
 
         // Return with translations
         $data = $product->toArray();

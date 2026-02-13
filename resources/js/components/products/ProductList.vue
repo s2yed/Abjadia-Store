@@ -48,14 +48,14 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <img 
                                 v-if="product.image" 
-                                :src="product.image.startsWith('http') ? product.image : (product.image.startsWith('images/') ? '/' + product.image : '/storage/' + product.image)" 
+                                :src="product.image.startsWith('http') ? product.image : '/storage/' + product.image" 
                                 class="h-10 w-10 object-cover rounded" 
                             />
                             <span v-else class="text-gray-400">{{ $t('no_image') }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">
-                                {{ typeof product.name === 'object' ? product.name[$i18n.locale] || product.name.en : product.name }}
+                                {{ getTrans(product.name) }}
                             </div>
                             <div class="text-xs text-gray-500">
                                 {{ product.slug }}
@@ -76,7 +76,7 @@
                         <td
                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                         >
-                            {{ product.category ? (typeof product.category.name === 'object' ? product.category.name[$i18n.locale] || product.category.name.en : product.category.name) : "-" }}
+                            {{ product.category ? getTrans(product.category.name) : "-" }}
                         </td>
                         <td
                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
@@ -108,25 +108,41 @@
             </table>
         </div>
 
-        <!-- Pagination (Placeholder) -->
+        <!-- Pagination -->
         <div
             v-if="totalPages > 1"
-            class="mt-4 flex justify-between items-center text-sm text-gray-500"
+            class="mt-6 flex justify-center items-center space-x-2 rtl:space-x-reverse bg-gray-50 p-4 rounded-lg border border-gray-100"
         >
             <button
                 @click="fetchProducts(currentPage - 1)"
                 :disabled="currentPage === 1"
-                class="disabled:opacity-50"
+                class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-                {{ $t('previous') }}
+                &larr;
             </button>
-            <span>{{ $t('page_of', { current: currentPage, total: totalPages }) }}</span>
+            
+            <template v-for="(page, index) in visiblePages" :key="index">
+                <span v-if="page === '...'" class="px-3 py-1 text-gray-500">...</span>
+                <button
+                    v-else
+                    @click="fetchProducts(page)"
+                    :class="[
+                        'px-3 py-1 border rounded text-sm transition-colors',
+                        currentPage === page
+                            ? 'bg-secondary-orange text-white border-secondary-orange'
+                            : 'bg-white border-gray-300 hover:bg-gray-50 text-gray-700'
+                    ]"
+                >
+                    {{ page }}
+                </button>
+            </template>
+
             <button
                 @click="fetchProducts(currentPage + 1)"
                 :disabled="currentPage === totalPages"
-                class="disabled:opacity-50"
+                class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-                {{ $t('next') }}
+                &rarr;
             </button>
         </div>
     </div>
@@ -134,61 +150,116 @@
 
 <script>
 import axios from "axios";
+import { ref, onMounted, computed } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default {
-    data() {
-        return {
-            products: [],
-            loading: true,
-            error: null,
-            currentPage: 1,
-            totalPages: 1,
-            searchQuery: "",
-            searchTimeout: null,
+    setup() {
+        const { t, locale } = useI18n();
+        const products = ref([]);
+        const loading = ref(true);
+        const error = ref(null);
+        const currentPage = ref(1);
+        const totalPages = ref(1);
+        const searchQuery = ref("");
+        let searchTimeout = null;
+
+        const visiblePages = computed(() => {
+            const pages = [];
+            const delta = 2;
+            const left = currentPage.value - delta;
+            const right = currentPage.value + delta + 1;
+            const l = [];
+
+            for (let i = 1; i <= totalPages.value; i++) {
+                if (i === 1 || i === totalPages.value || (i >= left && i < right)) {
+                    l.push(i);
+                }
+            }
+
+            for (let i of l) {
+                if (pages.length > 0) {
+                    if (i - pages[pages.length - 1] === 2) {
+                        pages.push(pages[pages.length - 1] + 1);
+                    } else if (i - pages[pages.length - 1] !== 1) {
+                        pages.push('...');
+                    }
+                }
+                pages.push(i);
+            }
+            return pages;
+        });
+
+        const getTrans = (val) => {
+            if (!val) return "";
+            if (typeof val === 'object') {
+                return val[locale.value] || val.en || "";
+            }
+            return val;
         };
-    },
-    methods: {
-        async fetchProducts(page = 1) {
-            this.loading = true;
+
+        const fetchProducts = async (page = 1) => {
+            loading.value = true;
             try {
                 let url = `/api/products?page=${page}`;
-                if (this.searchQuery) {
-                    url += `&search=${encodeURIComponent(this.searchQuery)}`;
+                if (searchQuery.value) {
+                    url += `&search=${encodeURIComponent(searchQuery.value)}`;
                 }
                 const response = await axios.get(url);
-                this.products = response.data.data;
-                this.currentPage = response.data.current_page;
-                this.totalPages = response.data.last_page;
+                products.value = response.data.data;
+                currentPage.value = response.data.current_page;
+                totalPages.value = response.data.last_page;
             } catch (err) {
-                this.error = this.$t('failed_load');
+                error.value = t('failed_load');
                 console.error(err);
             } finally {
-                this.loading = false;
+                loading.value = false;
+                console.log('Products loaded:', products.value);
+                console.log('Pagination:', { current: currentPage.value, total: totalPages.value });
+                if (products.value.length > 0) {
+                     console.log('Sample product type:', products.value[0].type);
+                }
             }
-        },
-        debouncedSearch() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-                this.currentPage = 1;
-                this.fetchProducts(1);
+        };
+
+        const debouncedSearch = () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentPage.value = 1;
+                fetchProducts(1);
             }, 300);
-        },
-        async deleteProduct(id) {
-            if (!confirm(this.$t('delete_product_confirm')))
+        };
+
+        const deleteProduct = async (id) => {
+            if (!confirm(t('delete_product_confirm')))
                 return;
 
             try {
                 await axios.delete(`/api/products/${id}`);
-                this.products = this.products.filter((p) => p.id !== id);
-                // Re-fetch if needed or just remove from list
+                products.value = products.value.filter((p) => p.id !== id);
             } catch (err) {
-                alert(this.$t('failed_delete_product'));
+                alert(t('failed_delete_product'));
                 console.error(err);
             }
-        },
-    },
-    mounted() {
-        this.fetchProducts();
+        };
+
+        onMounted(() => {
+            fetchProducts();
+        });
+
+        return {
+            products,
+            loading,
+            error,
+            currentPage,
+            totalPages,
+            searchQuery,
+            debouncedSearch,
+            deleteProduct,
+            fetchProducts,
+            getTrans,
+            visiblePages
+        };
     },
 };
 </script>

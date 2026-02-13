@@ -18,6 +18,7 @@ class Product extends Model
         'slug',
         'description',
         'price',
+        'weight',
         'discount_price',
         'stock',
         'is_active',
@@ -28,6 +29,7 @@ class Product extends Model
         'publication_year', // nullable
         'category_id',
         'brand_id', // nullable
+        'publisher_id', // new nullable foreign key
         'image',
         'seo_title',
         'seo_description',
@@ -44,9 +46,19 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function publisher()
+    {
+        return $this->belongsTo(Publisher::class);
+    }
+
     public function authors()
     {
         return $this->belongsToMany(Author::class, 'product_author');
+    }
+
+    public function translators()
+    {
+        return $this->belongsToMany(Translator::class, 'product_translator');
     }
 
     public function variants()

@@ -104,6 +104,27 @@
                                     </div>
                                 </label>
                             </div>
+
+                            <!-- Wallet Option -->
+                            <div class="relative">
+                                <input class="peer sr-only" id="payment_wallet" type="radio" name="payment_method" value="Wallet">
+                                <label class="flex cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:border-secondary-orange peer-checked:border-secondary-orange peer-checked:ring-1 peer-checked:ring-secondary-orange transition-all" for="payment_wallet">
+                                    <div class="flex items-center justify-between w-full">
+                                        <div class="flex items-center">
+                                            <svg class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                            </svg>
+                                            <div class="ml-4 rtl:ml-0 rtl:mr-4">
+                                                <p class="font-medium text-gray-900">{{ __('Wallet') }}</p>
+                                                <p class="text-xs text-gray-500">{{ __('Pay using your wallet balance') }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="h-5 w-5 rounded-full border border-gray-300 flex items-center justify-center peer-checked:border-secondary-orange peer-checked:bg-secondary-orange">
+                                            <div class="h-2 w-2 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -118,7 +139,7 @@
                         <li class="py-4 flex">
                             <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-md border border-gray-200 overflow-hidden">
                                 @if(isset($item['image']) && $item['image'])
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                <img src="{{ isset($item['image']) ? (Str::startsWith($item['image'], 'http') ? $item['image'] : asset('storage/' . $item['image'])) : asset('images/logo.png') }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
                                 @else
                                 <div class="w-full h-full flex items-center justify-center text-xs text-gray-400">{{ __('No Image') }}</div>
                                 @endif
@@ -127,9 +148,9 @@
                                 <div>
                                     <div class="flex justify-between text-base font-medium text-gray-900">
                                         <h3>{{ $item['name'] }}</h3>
-                                        <p class="mx-4">{{ $item['price'] * $item['quantity'] }} {{ __('SAR') }}</p>
+                                        <p class="mx-4">{{ $item['price'] * $item['quantity'] }} {{ $settings->currency ?? 'SAR' }}</p>
                                     </div>
-                                    <p class="mt-1 text-sm text-gray-500">{{ $item['quantity'] }} x {{ $item['price'] }} {{ __('SAR') }}</p>
+                                    <p class="mt-1 text-sm text-gray-500">{{ $item['quantity'] }} x {{ $item['price'] }} {{ $settings->currency ?? 'SAR' }}</p>
                                 </div>
                             </div>
                         </li>
@@ -139,15 +160,21 @@
                         <dl class="-my-4 text-sm divide-y divide-gray-200">
                             <div class="py-4 flex items-center justify-between">
                                 <dt class="text-gray-600">{{ __('Subtotal') }}</dt>
-                                <dd class="font-medium text-gray-900">{{ $total }} {{ __('SAR') }}</dd>
+                                <dd class="font-medium text-gray-900">{{ $total }} {{ $settings->currency ?? 'SAR' }}</dd>
                             </div>
                             <div class="py-4 flex items-center justify-between">
                                 <dt class="text-gray-600">{{ __('Shipping') }}</dt>
-                                <dd class="font-medium text-gray-900">{{ __('Free') }}</dd>
+                                <dd class="font-medium text-gray-900">
+                                    @if($shippingEstimation['is_free'])
+                                        <span class="text-green-600">{{ __('Free Shipping') }}</span>
+                                    @else
+                                        {{ $shippingEstimation['label'] }}
+                                    @endif
+                                </dd>
                             </div>
                             <div class="py-4 flex items-center justify-between">
                                 <dt class="text-base font-medium text-gray-900">{{ __('Order Total') }}</dt>
-                                <dd class="font-bold text-xl text-primary-dark">{{ $total }} {{ __('SAR') }}</dd>
+                                <dd class="font-bold text-xl text-primary-dark">{{ $totalWithShipping }} {{ $settings->currency ?? 'SAR' }}</dd>
                             </div>
                         </dl>
                     </div>

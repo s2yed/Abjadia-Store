@@ -21,9 +21,12 @@ Route::middleware(['locale'])->group(function () {
     Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-    Route::patch('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+    Route::put('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
+    Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+    Route::post('/cart/update-zone', [CartController::class, 'updateZone'])->name('cart.zone.update');
 
     Route::middleware(['auth', 'status'])->group(function () {
         Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -89,9 +92,24 @@ Route::middleware(['locale'])->group(function () {
 
         // Pages
         Route::apiResource('pages', \App\Http\Controllers\Api\PageController::class);
+        Route::apiResource('authors', \App\Http\Controllers\Api\AuthorController::class);
+        Route::apiResource('publishers', \App\Http\Controllers\Api\PublisherController::class);
+        Route::apiResource('translators', \App\Http\Controllers\Api\TranslatorController::class);
+
+        // Shipping
+        Route::apiResource('shipping-companies', \App\Http\Controllers\Api\ShippingCompanyController::class);
+        Route::apiResource('shipping-zones', \App\Http\Controllers\Api\ShippingZoneController::class);
+        Route::apiResource('shipping-rates', \App\Http\Controllers\Api\ShippingRateController::class);
+        Route::apiResource('coupons', \App\Http\Controllers\Api\CouponController::class);
+        Route::apiResource('offers', \App\Http\Controllers\Api\OfferController::class);
+        Route::apiResource('bank-accounts', \App\Http\Controllers\Api\BankAccountController::class);
+        
+        // Payments
+        Route::apiResource('order-payments', \App\Http\Controllers\Api\OrderPaymentController::class)->only(['store', 'destroy']);
     });
 
     Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');
+
 
     require __DIR__ . '/auth.php';
 });

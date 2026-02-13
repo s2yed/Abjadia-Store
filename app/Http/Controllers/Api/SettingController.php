@@ -49,6 +49,7 @@ class SettingController extends Controller
             'contact_email' => 'nullable|email',
             'contact_phone' => 'nullable|string',
             'whatsapp_number' => 'nullable|string',
+            'free_shipping_threshold' => 'nullable|numeric|min:0',
             'logo' => 'nullable|image|max:2048',
             'favicon' => 'nullable|image|max:1024',
         ]);

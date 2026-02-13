@@ -46,11 +46,31 @@ class MoyasarController extends Controller
             $order = Order::findOrFail($metadataOrderId);
 
             if ($payment['status'] === 'paid') {
-                $order->update([
-                    'payment_status' => 'paid',
-                    'status' => 'processing', 
-                    'transaction_id' => $payment['id']
-                ]);
+                $amount = $payment['amount'] / 100; // Moyasar uses hallas
+                
+                \Illuminate\Support\Facades\DB::transaction(function () use ($order, $payment, $amount) {
+                    // Update Order
+                    $order->update([
+                        'payment_status' => 'paid',
+                        'status' => 'processing', 
+                        'transaction_id' => $payment['id'],
+                        'paid_amount' => $order->paid_amount + $amount,
+                        'remaining_amount' => max(0, $order->total_price - ($order->paid_amount + $amount))
+                    ]);
+
+                    // Find online default bank account
+                    $bankAccount = \App\Models\BankAccount::where('is_online_default', true)->first();
+
+                    // Create Payment Record
+                    $order->payments()->create([
+                        'amount' => $amount,
+                        'payment_method' => $payment['source']['type'] ?? 'card',
+                        'transaction_id' => $payment['id'],
+                        'status' => 'approved',
+                        'paid_at' => now(),
+                        'bank_account_id' => $bankAccount?->id
+                    ]);
+                });
 
                 try {
                     $recipient = $order->user?->email ?? $order->email ?? null;
@@ -109,11 +129,30 @@ class MoyasarController extends Controller
                 if ($orderId) {
                     $order = Order::find($orderId);
                     if ($order && $order->payment_status !== 'paid') {
-                         $order->update([
-                            'payment_status' => 'paid',
-                            'status' => 'processing',
-                            'transaction_id' => $payment['id']
-                        ]);
+                        $amount = $payment['amount'] / 100;
+                        
+                        \Illuminate\Support\Facades\DB::transaction(function () use ($order, $payment, $amount) {
+                            $order->update([
+                                'payment_status' => 'paid',
+                                'status' => 'processing',
+                                'transaction_id' => $payment['id'],
+                                'paid_amount' => $order->paid_amount + $amount,
+                                'remaining_amount' => max(0, $order->total_price - ($order->paid_amount + $amount))
+                            ]);
+
+                            // Find online default bank account
+                            $bankAccount = \App\Models\BankAccount::where('is_online_default', true)->first();
+
+                            // Create Payment Record
+                            $order->payments()->create([
+                                'amount' => $amount,
+                                'payment_method' => $payment['source']['type'] ?? 'card',
+                                'transaction_id' => $payment['id'],
+                                'status' => 'approved',
+                                'paid_at' => now(),
+                                'bank_account_id' => $bankAccount?->id
+                            ]);
+                        });
 
                         try {
                             $recipient = $order->user?->email ?? $order->email ?? null;

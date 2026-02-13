@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Author;
+use App\Models\Publisher;
+use App\Models\Translator;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -37,6 +40,23 @@ class ProductController extends Controller
             });
         }
 
+        // New filters
+        if ($request->has('author')) {
+            $query->whereHas('authors', function($q) use ($request) {
+                $q->where('authors.id', $request->author);
+            });
+        }
+
+        if ($request->has('publisher')) {
+            $query->where('publisher_id', $request->publisher);
+        }
+
+        if ($request->has('translator')) {
+            $query->whereHas('translators', function($q) use ($request) {
+                $q->where('translators.id', $request->translator);
+            });
+        }
+
         // Price range filter
         if ($request->has('min_price') && $request->min_price !== null && $request->min_price !== '') {
             $query->where('price', '>=', $request->min_price);
@@ -49,8 +69,11 @@ class ProductController extends Controller
         $products = $query->paginate(12);
 
         $categories = Category::all();
+        $authors = Author::all();
+        $publishers = Publisher::all();
+        $translators = Translator::all();
 
-        return view('products.index', compact('products', 'categories'));
+        return view('products.index', compact('products', 'categories', 'authors', 'publishers', 'translators'));
     }
 
     public function show($slug)

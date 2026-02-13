@@ -19,6 +19,7 @@ class Setting extends Model
         'contact_phone',
         'whatsapp_number',
         'currency',
+        'free_shipping_threshold',
         'social_facebook',
         'social_twitter',
         'social_instagram',

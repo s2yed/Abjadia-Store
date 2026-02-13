@@ -11,7 +11,7 @@
             <div class="p-8">
                 <div class="mb-8 text-center">
                     <p class="text-gray-600 mb-2">{{ __('Order Total') }}</p>
-                    <p class="text-4xl font-bold text-primary-dark">{{ $order->total_price }} {{ __('SAR') }}</p>
+                    <p class="text-4xl font-bold text-primary-dark">{{ $order->total_price }} {{ $settings->currency ?? 'SAR' }}</p>
                     <p class="text-sm text-gray-500 mt-2">{{ __('Order #') }}{{ $order->id }}</p>
                 </div>
 
@@ -39,7 +39,7 @@
     Moyasar.init({
         element: '.mysr-form-wrapper',
         amount: {{ $order->total_price * 100 }}, // Amount in Halalas
-        currency: 'SAR',
+        currency: '{{ $settings->currency ?? 'SAR' }}',
         description: 'Order #{{ $order->id }}',
         publishable_api_key: '{{ config("services.moyasar.key") }}',
         callback_url: '{{ route("moyasar.callback") }}',

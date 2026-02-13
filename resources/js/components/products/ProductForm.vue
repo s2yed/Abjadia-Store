@@ -21,8 +21,8 @@
         </div>
 
         <form @submit.prevent="submitForm">
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Basic Info -->
                 <!-- Basic Info -->
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -65,9 +65,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700"
-                            >{{ $t('type') }}</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('type') }}</label>
                         <select
                             v-model="form.type"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
@@ -78,9 +76,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700"
-                            >{{ $t('category') }}</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('category') }}</label>
                         <select
                             v-model="form.category_id"
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
@@ -91,15 +87,13 @@
                                 :key="cat.id"
                                 :value="cat.id"
                             >
-                                {{ typeof cat.name === 'object' ? cat.name[$i18n.locale] || cat.name.en : cat.name }}
+                                {{ getTrans(cat.name) }}
                             </option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700"
-                            >{{ $t('price_sar') }}</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('price_sar') }}</label>
                         <input
                             v-model="form.price"
                             type="number"
@@ -110,9 +104,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700"
-                            >{{ $t('discount_price') }}</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('discount_price') }}</label>
                         <input
                             v-model="form.discount_price"
                             type="number"
@@ -122,9 +114,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700"
-                            >{{ $t('stock_quantity') }}</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('stock_quantity') }}</label>
                         <input
                             v-model="form.stock"
                             type="number"
@@ -132,48 +122,116 @@
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
                         />
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('weight_kg') }}</label>
+                        <input
+                            v-model="form.weight"
+                            type="number"
+                            step="0.01"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
+                        />
+                    </div>
                 </div>
 
                 <!-- Type Specific & Description -->
                 <div class="space-y-4">
-                    <!-- Book Fields -->
                     <div
                         v-if="form.type === 'book'"
                         class="bg-blue-50 p-4 rounded-md space-y-4"
                     >
                         <h3 class="font-medium text-blue-900">{{ $t('book_details') }}</h3>
                         <div>
-                            <label
-                                class="block text-sm font-medium text-gray-700"
-                                >{{ $t('isbn') }}</label
-                            >
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('isbn') }}</label>
                             <input
                                 v-model="form.isbn"
                                 type="text"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
                             />
                         </div>
+
+                        <!-- Authors Multi-select -->
                         <div>
-                            <label
-                                class="block text-sm font-medium text-gray-700"
-                                >{{ $t('publisher') }}</label
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-sm font-medium text-gray-700">{{ $t('authors') }}</label>
+                                <button type="button" @click.stop="openQuickAdd('author')" class="text-xs text-secondary-orange hover:underline">+ {{ $t('add_new') }}</button>
+                            </div>
+                            <select
+                                v-model="form.authors"
+                                multiple
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2 h-32"
                             >
-                            <input
-                                v-model="form.publisher"
-                                type="text"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
-                            />
+                                <option
+                                    v-for="author in authors"
+                                    :key="author.id"
+                                    :value="author.id"
+                                >
+                                    {{ getTrans(author.name) }}
+                                </option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">{{ $t('hold_ctrl_multiselect') }}</p>
                         </div>
+
+                        <!-- Publisher Single-select -->
                         <div>
-                            <label
-                                class="block text-sm font-medium text-gray-700"
-                                >{{ $t('pages') }}</label
-                            >
-                            <input
-                                v-model="form.pages"
-                                type="number"
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-sm font-medium text-gray-700">{{ $t('publisher') }}</label>
+                                <button type="button" @click.stop="openQuickAdd('publisher')" class="text-xs text-secondary-orange hover:underline">+ {{ $t('add_new') }}</button>
+                            </div>
+                            <select
+                                v-model="form.publisher_id"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
-                            />
+                            >
+                                <option :value="null">{{ $t('select_publisher') }}</option>
+                                <option
+                                    v-for="publisher in publishers"
+                                    :key="publisher.id"
+                                    :value="publisher.id"
+                                >
+                                    {{ getTrans(publisher.name) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Translators Multi-select -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-sm font-medium text-gray-700">{{ $t('translators') }}</label>
+                                <button type="button" @click.stop="openQuickAdd('translator')" class="text-xs text-secondary-orange hover:underline">+ {{ $t('add_new') }}</button>
+                            </div>
+                            <select
+                                v-model="form.translators"
+                                multiple
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2 h-24"
+                            >
+                                <option
+                                    v-for="translator in translators"
+                                    :key="translator.id"
+                                    :value="translator.id"
+                                >
+                                    {{ getTrans(translator.name) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">{{ $t('pages') }}</label>
+                                <input
+                                    v-model="form.pages"
+                                    type="number"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">{{ $t('publication_year') }}</label>
+                                <input
+                                    v-model="form.publication_year"
+                                    type="number"
+                                    placeholder="2024"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -186,10 +244,7 @@
                             {{ $t('supply_details') }}
                         </h3>
                         <div>
-                            <label
-                                class="block text-sm font-medium text-gray-700"
-                                >{{ $t('brand') }}</label
-                            >
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('brand') }}</label>
                             <select
                                 v-model="form.brand_id"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-secondary-orange focus:ring-secondary-orange sm:text-sm border p-2"
@@ -354,6 +409,49 @@
                 </button>
             </div>
         </form>
+
+        <!-- Quick Add Modal -->
+        <div v-if="showQuickAddModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click.stop="showQuickAddModal = false"></div>
+            
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full z-10 overflow-hidden rtl:text-right" :dir="locale === 'ar' ? 'rtl' : 'ltr'">
+                <form @submit.prevent="submitQuickAdd">
+                    <div class="px-4 pt-5 pb-4 sm:p-6 pb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            {{ t('add_new') }} {{ t(quickAddType) || quickAddType }}
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left rtl:text-right">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">{{ t('name_en') }}</label>
+                                    <input v-model="quickAddForm.name.en" type="text" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">{{ t('name_ar') }}</label>
+                                    <input v-model="quickAddForm.name.ar" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" dir="rtl" />
+                                </div>
+                            </div>
+                            <div class="text-left rtl:text-right">
+                                <label class="block text-sm font-medium text-gray-700">{{ t('bio_en') }}</label>
+                                <textarea v-model="quickAddForm.bio.en" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm"></textarea>
+                            </div>
+                            <div class="text-left rtl:text-right">
+                                <label class="block text-sm font-medium text-gray-700">{{ t('bio_ar') }}</label>
+                                <textarea v-model="quickAddForm.bio.ar" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm" dir="rtl"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end gap-3 rtl:flex-row-reverse">
+                        <button type="button" @click.stop="showQuickAddModal = false" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-orange">
+                            {{ t('cancel') }}
+                        </button>
+                        <button type="submit" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-secondary-orange text-sm font-medium text-white hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-orange">
+                            {{ t('save') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -365,12 +463,20 @@ import { useI18n } from 'vue-i18n';
 
 export default {
     setup() {
-        const { t } = useI18n();
+        const { t, locale } = useI18n();
         const route = useRoute();
         const router = useRouter();
         const isEdit = computed(() => !!route.params.id);
         const submitting = ref(false);
         const error = ref(null);
+
+        const getTrans = (val) => {
+            if (!val) return "";
+            if (typeof val === 'object') {
+                return val[locale.value] || val.en || "";
+            }
+            return val;
+        };
 
         const form = reactive({
             name: { en: "", ar: "" },
@@ -380,14 +486,18 @@ export default {
             price: "",
             discount_price: "",
             stock: 0,
+            weight: 0,
             description: { en: "", ar: "" },
             seo_title: { en: "", ar: "" },
             seo_description: { en: "", ar: "" },
             seo_keywords: { en: "", ar: "" },
             // Book specifics
             isbn: "",
-            publisher: "",
+            publisher_id: null,
             pages: "",
+            authors: [],
+            translators: [],
+            publication_year: "",
             // Supply specifics
             brand_id: null,
             image: null,
@@ -433,7 +543,17 @@ export default {
 
         const categories = ref([]);
         const brands = ref([]);
+        const authors = ref([]);
+        const publishers = ref([]);
+        const translators = ref([]);
         const previewImage = ref(null);
+
+        const showQuickAddModal = ref(false);
+        const quickAddType = ref(''); // 'author', 'publisher', 'translator'
+        const quickAddForm = reactive({
+            name: { en: '', ar: '' },
+            bio: { en: '', ar: '' }
+        });
 
         const handleImageUpload = (event) => {
             const file = event.target.files[0];
@@ -445,12 +565,18 @@ export default {
 
         const fetchOptions = async () => {
             try {
-                const [catRes, brandRes] = await Promise.all([
+                const [catRes, brandRes, authorRes, publisherRes, translatorRes] = await Promise.all([
                     axios.get("/api/categories"),
                     axios.get("/api/brands"),
+                    axios.get("/api/authors"),
+                    axios.get("/api/publishers"),
+                    axios.get("/api/translators"),
                 ]);
                 categories.value = catRes.data;
                 brands.value = brandRes.data;
+                authors.value = authorRes.data;
+                publishers.value = publisherRes.data;
+                translators.value = translatorRes.data;
             } catch (err) {
                 console.error("Failed to load options", err);
             }
@@ -471,6 +597,18 @@ export default {
                 data.seo_keywords = data.seo_keywords || { en: "", ar: "" };
                 
                 Object.assign(form, data);
+                
+                // Map relationships to IDs for the form
+                if (data.authors) {
+                    form.authors = data.authors.map(a => a.id);
+                }
+                if (data.translators) {
+                    form.translators = data.translators.map(t => t.id);
+                }
+                if (data.publisher) {
+                    form.publisher_id = data.publisher.id;
+                }
+
                 if (data.image) {
                      // Check if full URL or relative path
                      previewImage.value = data.image.startsWith('http') ? data.image : `/storage/${data.image}`;
@@ -500,12 +638,20 @@ export default {
             });
 
             // Handle Regular Fields
-            const regularFields = ['slug', 'type', 'category_id', 'price', 'discount_price', 'stock', 'isbn', 'publisher', 'pages', 'brand_id'];
+            const regularFields = ['slug', 'type', 'category_id', 'price', 'weight', 'discount_price', 'stock', 'isbn', 'publisher_id', 'pages', 'brand_id', 'publication_year'];
             regularFields.forEach(field => {
-                if (form[field] !== null && form[field] !== "") {
+                if (form[field] !== null && form[field] !== undefined && form[field] !== "") {
                      formData.append(field, form[field]);
+                } else if (isEdit.value && (form[field] === "" || form[field] === null)) {
+                    // Send empty string for optional fields to facilitate clearing them in DB if needed
+                    // (Note: Backend validation 'nullable' handles this)
+                    formData.append(field, "");
                 }
             });
+
+            // Handle Many-to-Many
+            form.authors.forEach(id => formData.append('authors[]', id));
+            form.translators.forEach(id => formData.append('translators[]', id));
 
             if (form.image instanceof File) {
                 formData.append('image', form.image);
@@ -536,6 +682,37 @@ export default {
             }
         };
 
+        const openQuickAdd = (type) => {
+            quickAddType.value = type;
+            quickAddForm.name = { en: '', ar: '' };
+            quickAddForm.bio = { en: '', ar: '' };
+            showQuickAddModal.value = true;
+        };
+
+        const submitQuickAdd = async () => {
+            try {
+                const endpoint = `/api/${quickAddType.value}s`;
+                const { data } = await axios.post(endpoint, quickAddForm);
+                
+                // Refresh options
+                if (quickAddType.value === 'author') {
+                    authors.value.push(data);
+                    form.authors.push(data.id);
+                } else if (quickAddType.value === 'publisher') {
+                    publishers.value.push(data);
+                    form.publisher_id = data.id;
+                } else if (quickAddType.value === 'translator') {
+                    translators.value.push(data);
+                    form.translators.push(data.id);
+                }
+                
+                showQuickAddModal.value = false;
+            } catch (err) {
+                console.error("Failed to quick add", err);
+                alert("Failed to add new item. Please check the form.");
+            }
+        };
+
         onMounted(() => {
             fetchOptions();
             fetchProduct();
@@ -548,6 +725,14 @@ export default {
             error,
             categories,
             brands,
+            authors,
+            publishers,
+            translators,
+            showQuickAddModal,
+            quickAddType,
+            quickAddForm,
+            openQuickAdd,
+            submitQuickAdd,
             submitForm,
             previewImage,
             handleImageUpload,
@@ -557,7 +742,12 @@ export default {
             keywordInputAr,
             removeTag,
             handleKeydown,
-            addTag
+            addTag,
+            getTrans,
+            t,
+            locale,
+            router,
+            route
         };
     },
 };

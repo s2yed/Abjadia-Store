@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="currency" content="{{ $settings->currency ?? 'SAR' }}">
 
     @if($settings && $settings->favicon)
         <link rel="icon" href="{{ asset($settings->favicon) }}">
@@ -130,8 +131,8 @@
 
 
 
-                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
-                        <a href="{{ route('lang.set', app()->getLocale() == 'en' ? 'ar' : 'en') }}" class="text-gray-700 hover:text-primary-dark font-medium">
+                    <div class="flex items-center space-x-6 rtl:space-x-reverse">
+                        <a href="{{ route('lang.set', app()->getLocale() == 'en' ? 'ar' : 'en') }}" class="text-gray-700 hover:text-primary-dark font-medium transition-colors">
                             {{ app()->getLocale() == 'en' ? 'العربية' : 'English' }}
                         </a>
                         @auth
@@ -144,11 +145,13 @@
                         <a href="{{ route('register') }}" class="text-gray-700 hover:text-primary-dark hidden md:inline-block">{{ __('Register') }}</a>
                         @endauth
 
-                        <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-primary-dark relative">
+                        <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-primary-dark relative group p-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span id="cart-count" class="absolute -top-1 -right-1 bg-secondary-orange text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{{ array_sum(array_column(session('cart', []), 'quantity')) }}</span>
+                            <span id="cart-count" class="absolute top-0 ltr:right-0 rtl:left-0 -mt-1.5 ltr:-mr-1.5 rtl:-ml-1.5 bg-secondary-orange text-white text-[10px] font-black rounded-full h-5 w-5 flex items-center justify-center shadow-lg border-2 border-white transform transition-transform group-hover:scale-110">
+                                {{ array_sum(array_column(session('cart', []), 'quantity')) }}
+                            </span>
                         </a>
                     </div>
                 </div>
@@ -261,27 +264,9 @@
                 </div>
             </div>
             @endif
-
-            @if(session('error'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="bg-red-50 border-l-4 border-red-400 p-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-red-700">
-                                {{ session('error') }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            @yield('content')
+            <toast-component></toast-component>
+        <side-cart-component></side-cart-component>
+        @yield('content')
         </main>
 
         <!-- Footer -->
@@ -297,8 +282,8 @@
                         <ul class="space-y-2 text-sm text-gray-300">
                             <li><a href="{{ route('pages.show', 'about-us') }}" class="hover:text-secondary-orange">{{ __('About Us') }}</a></li>
                             <li><a href="{{ route('pages.show', 'contact-us') }}" class="hover:text-secondary-orange">{{ __('Contact Us') }}</a></li>
-                            <li><a href="#" class="hover:text-secondary-orange">{{ __('Terms of Service') }}</a></li>
-                            <li><a href="#" class="hover:text-secondary-orange">{{ __('Privacy Policy') }}</a></li>
+                            <li><a href="{{ route('pages.show', 'terms-and-conditions') }}" class="hover:text-secondary-orange">{{ __('Terms of Service') }}</a></li>
+                            <li><a href="{{ route('pages.show', 'privacy-policy') }}" class="hover:text-secondary-orange">{{ __('Privacy Policy') }}</a></li>
                         </ul>
                     </div>
                     <div>
@@ -390,8 +375,22 @@
                         },
                         body: formData
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Failed to add to cart');
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        // Use the global cart store if available
+                        if (window.cartStore) {
+                            window.cartStore.increment();
+                            if (typeof window.cartStore.refresh === 'function') window.cartStore.refresh();
+                            if (typeof window.cartStore.open === 'function') window.cartStore.open();
+                        }
+
                         const cartCountElement = document.getElementById('cart-count');
                         if (cartCountElement && data.cartCount !== undefined) {
                             cartCountElement.textContent = data.cartCount;
@@ -411,6 +410,10 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                        // Show error via global notification store
+                        if (window.notification && typeof window.notification.error === 'function') {
+                            window.notification.error(error.message || 'Failed to add to cart');
+                        }
                         button.innerHTML = originalContent;
                         button.disabled = false;
                     });

@@ -22,24 +22,39 @@ class CustomerController extends Controller
     /**
      * Display the user's orders.
      */
-    public function orders()
+    public function orders(Request $request)
     {
-        $orders = Auth::user()->orders()->latest()->paginate(5);
+        $orders = Auth::user()->orders()->withCount('items')->latest()->paginate(5);
+        
+        if ($request->wantsJson()) {
+            return response()->json($orders);
+        }
+        
         return view('customer.orders', compact('orders'));
     }
 
-    public function orderDetails($id)
+    public function orderDetails(Request $request, $id)
     {
         $order = Auth::user()->orders()->with('items.product')->findOrFail($id);
+        
+        if ($request->wantsJson()) {
+            return response()->json($order);
+        }
+        
         return view('customer.order-details', compact('order'));
     }
 
     /**
      * Display the user's favorite products.
      */
-    public function favorites()
+    public function favorites(Request $request)
     {
         $favorites = Auth::user()->favorites()->with('product.category')->paginate(12);
+        
+        if ($request->wantsJson()) {
+            return response()->json($favorites);
+        }
+        
         return view('customer.favorites', compact('favorites'));
     }
 }

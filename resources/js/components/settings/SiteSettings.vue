@@ -110,10 +110,17 @@
                             <input type="text" v-model="form.whatsapp_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
                         </div>
                     </div>
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700">{{ $t('currency') }}</label>
-                        <input type="text" v-model="form.currency" placeholder="SAR" maxlength="10" class="mt-1 block w-full sm:w-1/3 border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
-                        <p class="mt-1 text-sm text-gray-500">{{ $t('currency_hint') }}</p>
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('currency') }}</label>
+                            <input type="text" v-model="form.currency" placeholder="SAR" maxlength="10" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
+                            <p class="mt-1 text-sm text-gray-500">{{ $t('currency_hint') }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('free_shipping_threshold') }}</label>
+                            <input type="number" step="0.01" v-model="form.free_shipping_threshold" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
+                            <p class="mt-1 text-sm text-gray-500">{{ $t('free_shipping_threshold_hint') }}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -153,6 +160,7 @@ const form = reactive({
     contact_phone: '',
     whatsapp_number: '',
     currency: 'SAR',
+    free_shipping_threshold: 0,
     social_facebook: '',
     social_twitter: '',
     social_instagram: '',

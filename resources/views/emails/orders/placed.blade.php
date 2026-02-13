@@ -20,14 +20,14 @@
             <tr>
                 <td>{{ $item->product_name }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ $item->price }} {{ __('SAR') }}</td>
+                <td>{{ $item->price }} {{ $settings->currency ?? 'SAR' }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="2" style="text-align: right; font-weight: bold;">{{ __('Total') }}</td>
-                <td style="font-weight: bold;">{{ $order->total_price }} {{ __('SAR') }}</td>
+                <td style="font-weight: bold;">{{ $order->total_price }} {{ $settings->currency ?? 'SAR' }}</td>
             </tr>
         </tfoot>
     </table>

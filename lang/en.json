@@ -149,5 +149,12 @@
     "Something went wrong. Please try again.": "Something went wrong. Please try again.",
     "Product added to favorites.": "Product added to favorites.",
     "Product removed from favorites.": "Product removed from favorites.",
-    "Hero": "Hero"
+    "Wallet": "Wallet",
+    "Pay using your wallet balance": "Pay using your wallet balance",
+    "Bank Account": "Bank Account",
+    "Bank Name": "Bank Name",
+    "Account Name": "Account Name",
+    "Account Number": "Account Number",
+    "IBAN": "IBAN",
+    "Online Default": "Online Default"
 }

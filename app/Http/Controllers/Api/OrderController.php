@@ -29,7 +29,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['items.product', 'user']);
+        $order->load(['items.product', 'user', 'payments']);
         return response()->json($order);
     }
 

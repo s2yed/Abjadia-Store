@@ -87,23 +87,25 @@
 
         <!-- Pagination -->
         <div
-            v-if="totalPages > 1"
-            class="mt-4 flex justify-between items-center text-sm text-gray-500"
+            v-if="totalPages > 0"
+            class="mt-6 flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100"
         >
             <button
                 @click="fetchOrders(currentPage - 1)"
                 :disabled="currentPage === 1"
-                class="disabled:opacity-50"
+                class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-                {{ $t('previous') }}
+                &larr; {{ $t('previous') }}
             </button>
-            <span>{{ $t('page_of', { current: currentPage, total: totalPages }) }}</span>
+            <span class="text-sm font-medium text-gray-700">
+                {{ $t('page') }} {{ currentPage }} {{ $t('of') }} {{ totalPages }}
+            </span>
             <button
                 @click="fetchOrders(currentPage + 1)"
                 :disabled="currentPage === totalPages"
-                class="disabled:opacity-50"
+                class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-                {{ $t('next') }}
+                {{ $t('next') }} &rarr;
             </button>
         </div>
     </div>

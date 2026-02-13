@@ -182,7 +182,7 @@
             <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group block text-center">
                 <div class="bg-gray-100 rounded-lg p-6 mb-4 transition transform group-hover:-translate-y-1 group-hover:shadow-lg h-32 flex items-center justify-center">
                     @if($category->image)
-                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="h-24 w-24 object-contain">
+                    <img src="{{ Str::startsWith($category->image, 'http') ? $category->image : asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="h-24 w-24 object-contain">
                     @else
                     <div class="h-20 w-full flex items-center justify-center text-4xl">
                         @if($category->slug == 'books') 📚

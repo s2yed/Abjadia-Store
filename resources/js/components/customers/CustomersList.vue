@@ -53,10 +53,10 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="totalPages > 1" class="mt-4 flex justify-between items-center text-sm text-gray-500">
-            <button @click="fetchCustomers(currentPage - 1)" :disabled="currentPage === 1" class="disabled:opacity-50">{{ $t('previous') }}</button>
-            <span>{{ $t('page_of', { current: currentPage, total: totalPages }) }}</span>
-            <button @click="fetchCustomers(currentPage + 1)" :disabled="currentPage === totalPages" class="disabled:opacity-50">{{ $t('next') }}</button>
+        <div v-if="totalPages > 0" class="mt-6 flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <button @click="fetchCustomers(currentPage - 1)" :disabled="currentPage === 1" class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">&larr; {{ $t('previous') }}</button>
+            <span class="text-sm font-medium text-gray-700">{{ $t('page') }} {{ currentPage }} {{ $t('of') }} {{ totalPages }}</span>
+            <button @click="fetchCustomers(currentPage + 1)" :disabled="currentPage === totalPages" class="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">{{ $t('next') }} &rarr;</button>
         </div>
 
         <!-- Add/Edit Customer Modal -->
