@@ -32,6 +32,7 @@
     <meta property="twitter:image" content="@yield('og_image', ($settings && $settings->logo) ? asset($settings->logo) : asset('images/logo.png'))">
 
     @yield('seo')
+    @yield('seo_noindex')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +97,7 @@
         </a>
     </div>
     @endif
-    <div class="min-h-screen flex flex-col">
+    <div id="app" class="min-h-screen flex flex-col">
         <!-- Header -->
         <header class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,8 +121,8 @@
                     <!-- Search Bar -->
                     <div class="flex-1 max-w-lg mx-8 hidden md:block">
                         <form action="{{ route('products.index') }}" method="GET" class="relative">
-                            <input type="text" name="search" value="{{ request('search') }}" class="w-full border-gray-300 rounded-md focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm px-4 py-2" placeholder="{{ __('Search for books, supplies...') }}">
-                            <button type="submit" class="absolute inset-y-0 right-0 px-3 flex items-center bg-secondary-orange rounded-r-md text-white hover:bg-orange-600 transition-colors">
+                            <input type="text" name="search" value="{{ request('search') }}" class="w-full border-gray-300 rounded-md focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm px-4 py-2 ltr:pr-10 rtl:pl-10" placeholder="{{ __('Search for books, supplies...') }}">
+                            <button type="submit" class="absolute inset-y-0 ltr:right-0 rtl:left-0 px-3 flex items-center bg-secondary-orange ltr:rounded-r-md rtl:rounded-l-md text-white hover:bg-orange-600 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -172,7 +173,7 @@
         </nav>
 
         <!-- Mobile Drawer Overlay -->
-        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden transition-opacity duration-300 opacity-0"></div>
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[60] hidden transition-opacity duration-300 opacity-0"></div>
 
         <!-- Mobile Drawer Menu -->
         <div id="mobile-menu-drawer" class="fixed inset-y-0 ltr:left-0 rtl:right-0 w-64 bg-white z-[70] transform ltr:-translate-x-full rtl:translate-x-full transition-transform duration-300 ease-in-out shadow-xl md:hidden">
@@ -235,8 +236,8 @@
         <!-- Mobile Search Bar -->
         <div class="block md:hidden bg-white p-4 shadow-sm">
             <form action="{{ route('products.index') }}" method="GET" class="relative">
-                <input type="text" name="search" value="{{ request('search') }}" class="w-full border-gray-300 rounded-md focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm px-4 py-2" placeholder="{{ __('Search for books, supplies...') }}">
-                <button type="submit" class="absolute inset-y-0 right-0 px-3 flex items-center bg-secondary-orange rounded-r-md text-white hover:bg-orange-600 transition-colors">
+                <input type="text" name="search" value="{{ request('search') }}" class="w-full border-gray-300 rounded-md focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm px-4 py-2 ltr:pr-10 rtl:pl-10" placeholder="{{ __('Search for books, supplies...') }}">
+                <button type="submit" class="absolute inset-y-0 ltr:right-0 rtl:left-0 px-3 flex items-center bg-secondary-orange ltr:rounded-r-md rtl:rounded-l-md text-white hover:bg-orange-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>

@@ -117,6 +117,7 @@ const authorText = computed(() => {
 const getImageUrl = (image) => {
     if (!image) return '';
     if (image.startsWith('http')) return image;
+    if (image.startsWith('/storage/') || image.startsWith('storage/')) return image.startsWith('/') ? image : `/${image}`;
     return `/storage/${image}`;
 };
 

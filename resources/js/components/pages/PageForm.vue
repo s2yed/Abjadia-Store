@@ -160,7 +160,7 @@ const fetchPage = async (id) => {
         form.is_active = !!data.is_active;
 
         if (data.image_path) {
-            previewImage.value = `/storage/${data.image_path}`;
+            previewImage.value = data.image_path.startsWith('http') || data.image_path.startsWith('/storage') || data.image_path.startsWith('storage') ? (data.image_path.startsWith('http') || data.image_path.startsWith('/') ? data.image_path : '/' + data.image_path) : `/storage/${data.image_path}`;
         }
     } catch (error) {
         console.error('Error fetching page:', error);

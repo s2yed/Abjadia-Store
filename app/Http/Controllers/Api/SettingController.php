@@ -26,6 +26,9 @@ class SettingController extends Controller
                 'contact_email' => '',
                 'contact_phone' => '',
                 'whatsapp_number' => '',
+                'currency' => 'SAR',
+                'free_shipping_threshold' => 0,
+                'default_shipping_cost' => 0,
                 'social_facebook' => '',
                 'social_twitter' => '',
                 'social_instagram' => '',
@@ -50,6 +53,7 @@ class SettingController extends Controller
             'contact_phone' => 'nullable|string',
             'whatsapp_number' => 'nullable|string',
             'free_shipping_threshold' => 'nullable|numeric|min:0',
+            'default_shipping_cost' => 'nullable|numeric|min:0',
             'logo' => 'nullable|image|max:2048',
             'favicon' => 'nullable|image|max:1024',
         ]);
@@ -57,13 +61,15 @@ class SettingController extends Controller
         $settings = Setting::firstOrCreate(['id' => 1]);
         
         $data = $request->except(['logo', 'favicon']);
+        $data['default_shipping_cost'] = floatval($request->input('default_shipping_cost') ?: 0);
+        $data['free_shipping_threshold'] = floatval($request->input('free_shipping_threshold') ?: 0);
 
         if ($request->hasFile('logo')) {
             if ($settings->logo) {
                 Storage::disk('public')->delete(str_replace('/storage/', '', $settings->logo));
             }
             $path = $request->file('logo')->store('site', 'public');
-            $data['logo'] = '/storage/' . $path;
+            $data['logo'] = $path;
         }
 
         if ($request->hasFile('favicon')) {
@@ -71,7 +77,7 @@ class SettingController extends Controller
                 Storage::disk('public')->delete(str_replace('/storage/', '', $settings->favicon));
             }
             $path = $request->file('favicon')->store('site', 'public');
-            $data['favicon'] = '/storage/' . $path;
+            $data['favicon'] = $path;
         }
 
         $settings->update($data);

@@ -19,7 +19,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700">{{ $t('image') }}</label>
                 <div v-if="currentImage" class="mb-2">
-                    <img :src="currentImage.startsWith('http') ? currentImage : '/storage/' + currentImage" class="h-24 w-24 object-cover rounded border">
+                    <img :src="currentImage.startsWith('http') || currentImage.startsWith('/storage') || currentImage.startsWith('storage') ? (currentImage.startsWith('http') || currentImage.startsWith('/') ? currentImage : '/' + currentImage) : '/storage/' + currentImage" class="h-24 w-24 object-cover rounded border">
                 </div>
                 <input type="file" @change="handleFileChange" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
             </div>

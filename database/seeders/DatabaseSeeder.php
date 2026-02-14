@@ -31,11 +31,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            UserSeeder::class,
             CategorySeeder::class,
+            BrandSeeder::class,
             AuthorSeeder::class,
+            PublisherSeeder::class,
+            TranslatorSeeder::class,
             ProductSeeder::class,
             BannerSeeder::class,
             SettingSeeder::class,
+            ShippingCompanySeeder::class,
         ]);
     }
 }

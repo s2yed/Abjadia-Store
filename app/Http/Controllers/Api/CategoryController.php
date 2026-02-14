@@ -33,7 +33,9 @@ class CategoryController extends Controller
             'name.ar' => 'nullable|string|max:255',
             'slug' => 'nullable|string|max:255|unique:categories,slug',
             'parent_id' => 'nullable|exists:categories,id',
-            'description' => 'nullable|string',
+            'description' => 'nullable|array',
+            'description.en' => 'nullable|string',
+            'description.ar' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
         ]);
 
@@ -67,7 +69,9 @@ class CategoryController extends Controller
             'name.ar' => 'nullable|string|max:255',
             'slug' => 'nullable|string|max:255|unique:categories,slug,' . $category->id,
             'parent_id' => 'nullable|exists:categories,id',
-            'description' => 'nullable|string',
+            'description' => 'nullable|array',
+            'description.en' => 'nullable|string',
+            'description.ar' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
         ]);
 

@@ -21,66 +21,7 @@ class CheckoutController extends Controller
 
     public function index()
     {
-        $cart = Session::get('cart', []);
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', __('Your cart is empty.'));
-        }
-
-        $cartItems = collect();
-        foreach ($cart as $id => $details) {
-            $product = \App\Models\Product::find($details['id'] ?? $id);
-            if ($product) {
-                $product->quantity = $details['quantity'];
-                $cartItems->push($product);
-            }
-        }
-
-        $promotionEngine = app(\App\Services\PromotionEngine::class);
-        $result = $promotionEngine->applyOffers($cartItems);
-        $cartItems = $result['items'];
-
-        $subtotal = $cartItems->sum(function($item) {
-            return $item->price * $item->quantity;
-        });
-
-        $couponCode = Session::get('coupon_code');
-        $couponDiscount = 0;
-        if ($couponCode) {
-            $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
-            if ($coupon && $coupon->isValid()) {
-                if ($coupon->type == 'percentage') {
-                    $couponDiscount = $subtotal * ($coupon->value / 100);
-                    if ($coupon->max_discount_value && $couponDiscount > $coupon->max_discount_value) {
-                        $couponDiscount = $coupon->max_discount_value;
-                    }
-                } else {
-                    $couponDiscount = $coupon->value;
-                }
-                if ($coupon->min_order_value && $subtotal < $coupon->min_order_value) {
-                    $couponDiscount = 0;
-                }
-            }
-        }
-
-        $total = $subtotal - ($result['total_discount'] + $couponDiscount);
-        if ($total < 0) $total = 0;
-
-        $selectedZoneId = Session::get('shipping_zone_id');
-        $totalWeight = $cartItems->sum(function($item) {
-            return ($item->weight ?? 0) * $item->quantity;
-        });
-        $shippingEstimation = $this->shippingService->calculate($total, $totalWeight, $selectedZoneId);
-        $totalWithShipping = $total + $shippingEstimation['cost'];
-
-        return view('checkout.index', compact(
-            'cart', 
-            'total', // This is subtotal after discount
-            'totalWithShipping',
-            'subtotal', 
-            'couponDiscount', 
-            'result',
-            'shippingEstimation'
-        ));
+        return redirect()->route('cart.index');
     }
 
     public function store(Request $request)
@@ -188,12 +129,21 @@ class CheckoutController extends Controller
             }
 
             if ($request->payment_method === 'Card') {
+                if ($request->wantsJson()) {
+                    return response()->json(['redirect_url' => route('moyasar.pay', $order->id)]);
+                }
                 return redirect()->route('moyasar.pay', $order->id);
             }
 
+            if ($request->wantsJson()) {
+                return response()->json(['redirect_url' => route('customer.orders.show', $order->id), 'message' => __('Order placed successfully!')]);
+            }
             return redirect()->route('customer.orders.show', $order->id)->with('success', __('Order placed successfully!'));
         } catch (\Exception $e) {
             DB::rollBack();
+            if ($request->wantsJson()) {
+                return response()->json(['message' => __('Something went wrong. Please try again.') . ' ' . $e->getMessage()], 500);
+            }
             return redirect()->back()->with('error', __('Something went wrong. Please try again.') . ' ' . $e->getMessage());
         }
     }

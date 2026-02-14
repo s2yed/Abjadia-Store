@@ -155,6 +155,7 @@ const getProductImage = (item) => {
     if (!item.product || !item.product.image) return null;
     const img = item.product.image;
     if (img.startsWith('http')) return img;
+    if (img.startsWith('/storage/') || img.startsWith('storage/')) return img.startsWith('/') ? img : `/${img}`;
     if (img.startsWith('images/')) return `/${img}`;
     return `/storage/${img}`;
 };

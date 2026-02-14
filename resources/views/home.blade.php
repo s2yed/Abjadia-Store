@@ -1,177 +1,32 @@
 @extends('layouts.app')
 
-@section('title', __('Abjadia Store - Books and School Supplies'))
-@section('meta_description', __('Discover a wide range of books, stationery, and school essentials at Abjadia Store. Everything you need for academic success.'))
-@section('meta_keywords', 'abjadia, books, school supplies, stationery, kids books, educational supplies')
+@section('title', $setting->site_name ?? __('Abjadia Store - Books and School Supplies'))
+@section('meta_description', $setting->site_description ?? __('Discover a wide range of books, stationery, and school essentials at Abjadia Store. Everything you need for academic success.'))
+@section('meta_keywords', $setting->site_keywords ?? 'abjadia, books, school supplies, stationery, kids books, educational supplies')
 
 @section('content')
-<!-- Hero Section with Swiper -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<style>
-    .swiper {
-        width: 100%;
-        height: 500px;
-    }
-
-    .swiper-wrapper {
-        height: 100%;
-        /* Ensure wrapper takes full height */
-    }
-
-    .swiper-slide {
-        background: #333;
-        /* Fallback color */
-        height: 100%;
-        /* Force full height */
-        width: 100%;
-        /* Force full width */
-        position: relative;
-        overflow: hidden;
-    }
-
-    .swiper-slide img {
-        position: absolute;
-        /* Absolute positioning to fill container */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 10;
-        /* Image at base level */
-    }
-
-    /* Content Overlay */
-    .slide-content-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.3);
-        /* Slight darkness */
-        z-index: 20;
-        /* Above image */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 1rem;
-    }
-
-    .swiper-button-next,
-    .swiper-button-prev {
-        color: #fff;
-        z-index: 30;
-        /* Above overlay */
-    }
-
-    .swiper-pagination-bullet-active {
-        background: #fff;
-    }
-</style>
-
-<div class="relative bg-gray-900 overflow-hidden h-[500px]">
-    @if(isset($banners['hero_image']) && $banners['hero_image']->isNotEmpty())
-    <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-            @foreach($banners['hero_image'] as $banner)
-            <div class="swiper-slide">
-                <img src="{{ asset($banner->image_path) }}" alt="{{ $banner->title }}">
-                <!-- Overlay Text (Optional) -->
-                @if($banner->title || $banner->description)
-                <div class="slide-content-overlay">
-                    <{{ $loop->first ? 'h1' : 'p' }} class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 opacity-0 translate-y-4 transition-all duration-700 delay-300 transform">{{ $banner->title }}</{{ $loop->first ? 'h1' : 'p' }}>
-                    @if($banner->description)
-                    <p class="text-lg md:text-2xl text-gray-200 mb-8 max-w-2xl opacity-0 translate-y-4 transition-all duration-700 delay-500 transform">{{ $banner->description }}</p>
-                    @endif
-                    @if($banner->link && $banner->link != '#')
-                    <a href="{{ $banner->link }}" class="inline-block px-8 py-3 border border-transparent text-base font-medium rounded-md text-gray-900 bg-white hover:bg-gray-100 md:py-4 md:text-lg transition opacity-0 translate-y-4 transition-all duration-700 delay-700 transform">
-                        {{ __('Explore Now') }}
-                    </a>
-                    @endif
-                </div>
-                @endif
-            </div>
-            @endforeach
-        </div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
-    </div>
+    {{-- Hero Section --}}
+    <!-- Banners Count: {{ isset($banners['hero_image']) ? $banners['hero_image']->count() : 'NULL' }} -->
+    @if(isset($banners['hero_image']) && $banners['hero_image']->count() > 0)
+        <hero-slider-component :banners="{{ $banners['hero_image']->toJson() }}"></hero-slider-component>
     @else
-    <!-- Fallback Static Hero if no banners -->
-    <div class="max-w-7xl mx-auto h-full flex items-center">
-        <div class="relative z-10 pb-8 bg-gray-900 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 px-4 sm:px-6 lg:px-8">
-            <main class="mt-10 mx-auto max-w-7xl sm:mt-12 md:mt-16 lg:mt-20 xl:mt-28">
-                <div class="sm:text-center lg:text-left">
-                    <h1 class="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
-                        <span class="block">{{ __('Books & School Supplies') }}</span>
-                        <span class="block text-secondary-orange">{{ __('For a Better Future') }}</span>
-                    </h1>
-                    <p class="mt-3 text-base text-gray-300 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                        {{ __('Discover a wide range of books, stationery, and school essentials. Everything you need for academic success, delivered to your doorstep.') }}
-                    </p>
-                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                        <div class="rounded-md shadow">
-                            <a href="{{ route('products.index') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-secondary-orange hover:bg-orange-600 md:py-4 md:text-lg">
-                                {{ __('Shop Now') }}
-                            </a>
-                        </div>
-                    </div>
+        {{-- Fallback Static Hero if no banners --}}
+        <div class="relative bg-primary-dark overflow-hidden h-[400px]">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1507842217121-9e859bd67629?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80" class="w-full h-full object-cover opacity-30">
+            </div>
+            <div class="relative max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">{{ __('Welcome to Abjadia') }}</h1>
+                <p class="mt-6 text-xl text-gray-300 max-w-3xl">{{ __('Your one-stop destination for all your reading and school supply needs.') }}</p>
+                <div class="mt-10">
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-secondary-orange hover:bg-orange-600">
+                        {{ __('Shop Now') }}
+                    </a>
                 </div>
-            </main>
+            </div>
         </div>
-        <div class="absolute inset-y-0 right-0 w-1/2 bg-gray-800 hidden lg:block">
-            <img src="{{ asset('images/banners/hero_placeholder.jpg') }}" alt="{{ __('Hero') }}" class="w-full h-full object-cover opacity-50">
-        </div>
-    </div>
     @endif
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var swiper = new Swiper(".mySwiper", {
-            loop: true,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-            on: {
-                init: function() {
-                    animateSlide(this.slides[this.activeIndex]);
-                },
-                slideChange: function() {
-                    // Reset all
-                    document.querySelectorAll('.swiper-slide h1, .swiper-slide p, .swiper-slide a.inline-block').forEach(el => {
-                        el.classList.remove('opacity-100', 'translate-y-0');
-                        el.classList.add('opacity-0', 'translate-y-4');
-                    });
-
-                    // Animate active
-                    setTimeout(() => {
-                        animateSlide(this.slides[this.activeIndex]);
-                    }, 100);
-                }
-            }
-        });
-
-        function animateSlide(slide) {
-            if (!slide) return;
-            slide.querySelectorAll('h1, p, a.inline-block').forEach(el => {
-                el.classList.remove('opacity-0', 'translate-y-4');
-                el.classList.add('opacity-100', 'translate-y-0');
-            });
-        }
-    });
-</script>
 
 <!-- Categories Section -->
 <section class="py-12 bg-white">
@@ -182,7 +37,7 @@
             <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group block text-center">
                 <div class="bg-gray-100 rounded-lg p-6 mb-4 transition transform group-hover:-translate-y-1 group-hover:shadow-lg h-32 flex items-center justify-center">
                     @if($category->image)
-                    <img src="{{ Str::startsWith($category->image, 'http') ? $category->image : asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="h-24 w-24 object-contain">
+                    <img src="{{ $category->image }}" alt="{{ $category->name }}" class="h-24 w-24 object-contain">
                     @else
                     <div class="h-20 w-full flex items-center justify-center text-4xl">
                         @if($category->slug == 'books') 📚
@@ -220,7 +75,7 @@
 @foreach($banners['separator_1'] as $banner)
 <div class="w-full h-64 md:h-80 overflow-hidden relative group">
     <a href="{{ $banner->link ?? '#' }}" class="block h-full w-full">
-        <img src="{{ asset($banner->image_path) }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="{{ $banner->title }}">
+        <img src="{{ $banner->image_path }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="{{ $banner->title }}">
     </a>
 </div>
 @endforeach
@@ -252,7 +107,7 @@
 @foreach($banners['separator_2'] as $banner)
 <div class="w-full h-64 md:h-80 overflow-hidden relative group">
     <a href="{{ $banner->link ?? '#' }}" class="block h-full w-full">
-        <img src="{{ asset($banner->image_path) }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="{{ $banner->title }}">
+        <img src="{{ $banner->image_path }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="{{ $banner->title }}">
         @if($banner->title)
         <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
             <h2 class="text-4xl md:text-6xl font-bold text-white tracking-tight">{{ $banner->title }}</h2>
@@ -290,7 +145,7 @@
 @foreach($banners['separator_3'] as $banner)
 <div class="w-full h-64 md:h-80 overflow-hidden relative group">
     <a href="{{ $banner->link ?? '#' }}" class="block h-full w-full">
-        <img src="{{ asset($banner->image_path) }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="{{ $banner->title }}">
+        <img src="{{ $banner->image_path }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="{{ $banner->title }}">
         @if($banner->title)
         <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
             <h2 class="text-4xl md:text-6xl font-bold text-white tracking-tight">{{ $banner->title }}</h2>

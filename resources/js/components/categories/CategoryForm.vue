@@ -122,7 +122,11 @@ export default {
                 this.$router.push('/dashboard/categories');
             } catch (err) {
                 console.error(err);
-                alert(this.$t('failed_save_category'));
+                if (err.response && err.response.data && err.response.data.message) {
+                    alert('Error: ' + err.response.data.message);
+                } else {
+                    alert(this.$t('failed_save_category'));
+                }
             } finally {
                 this.loading = false;
             }

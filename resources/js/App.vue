@@ -4,7 +4,7 @@
         <div 
             v-if="sidebarOpen" 
             @click="sidebarOpen = false"
-            class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden transition-opacity duration-300"
+            class="fixed inset-0 bg-black/20 z-20 md:hidden transition-opacity duration-300"
         ></div>
 
         <!-- Sidebar -->

@@ -48,7 +48,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <img 
                                 v-if="product.image" 
-                                :src="product.image.startsWith('http') ? product.image : '/storage/' + product.image" 
+                                :src="product.image.startsWith('http') || product.image.startsWith('/storage') || product.image.startsWith('storage') ? (product.image.startsWith('http') || product.image.startsWith('/') ? product.image : '/' + product.image) : '/storage/' + product.image" 
                                 class="h-10 w-10 object-cover rounded" 
                             />
                             <span v-else class="text-gray-400">{{ $t('no_image') }}</span>

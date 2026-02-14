@@ -20,14 +20,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
  
-        // if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
-        //     \Illuminate\Support\Facades\URL::forceScheme('https');
-        // }
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         
-        // // Also force HTTPS in production environment
-        // if ($this->app->environment('production')) {
-        //     \Illuminate\Support\Facades\URL::forceScheme('https');
-        // }
+        // Also force HTTPS in production environment
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         
 
         try {

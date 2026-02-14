@@ -29,7 +29,7 @@
                             <div class="flex items-center space-x-4">
                                 <div class="h-16 w-16 bg-gray-100 rounded overflow-hidden flex items-center justify-center border">
                                     <img v-if="logoPreview || form.logo" :src="logoPreview || form.logo" class="max-h-full max-w-full">
-                                    <span v-else class="text-gray-400 text-xs">No Logo</span>
+                                    <span v-else class="text-gray-400 text-xs">{{ $t('no_logo') }}</span>
                                 </div>
                                 <div class="flex-1">
                                     <input type="file" @change="handleFileUpload($event, 'logo')" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
@@ -41,7 +41,7 @@
                             <div class="flex items-center space-x-4">
                                 <div class="h-10 w-10 bg-gray-100 rounded overflow-hidden flex items-center justify-center border">
                                     <img v-if="faviconPreview || form.favicon" :src="faviconPreview || form.favicon" class="max-h-full max-w-full">
-                                    <span v-else class="text-gray-400 text-xs">No Fav</span>
+                                    <span v-else class="text-gray-400 text-xs">{{ $t('no_favicon') }}</span>
                                 </div>
                                 <div class="flex-1">
                                     <input type="file" @change="handleFileUpload($event, 'favicon')" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100">
@@ -70,6 +70,10 @@
                                     <label class="block text-sm font-medium text-gray-700">{{ $t('meta_description') }} (AR)</label>
                                     <textarea v-model="form.site_description.ar" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm" dir="rtl"></textarea>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">{{ $t('meta_keywords') }} (AR)</label>
+                                    <TagInput v-model="form.site_keywords.ar" :placeholder="$t('add_keywords')" :hint="$t('press_enter_to_add_keywords')" />
+                                </div>
                             </div>
                         </div>
 
@@ -87,6 +91,10 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">{{ $t('meta_description') }} (EN)</label>
                                     <textarea v-model="form.site_description.en" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">{{ $t('meta_keywords') }} (EN)</label>
+                                    <TagInput v-model="form.site_keywords.en" :placeholder="$t('add_keywords')" :hint="$t('press_enter_to_add_keywords')" />
                                 </div>
                             </div>
                         </div>
@@ -121,6 +129,11 @@
                             <input type="number" step="0.01" v-model="form.free_shipping_threshold" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
                             <p class="mt-1 text-sm text-gray-500">{{ $t('free_shipping_threshold_hint') }}</p>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ $t('default_shipping_cost') }}</label>
+                            <input type="number" step="0.01" v-model="form.default_shipping_cost" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-secondary-orange focus:border-secondary-orange sm:text-sm">
+                            <p class="mt-1 text-sm text-gray-500">{{ $t('default_shipping_cost_hint') }}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -145,6 +158,7 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
 import axios from 'axios';
+import TagInput from '../ui/TagInput.vue';
 
 const loading = ref(false);
 const logoPreview = ref(null);
@@ -161,6 +175,7 @@ const form = reactive({
     whatsapp_number: '',
     currency: 'SAR',
     free_shipping_threshold: 0,
+    default_shipping_cost: 0,
     social_facebook: '',
     social_twitter: '',
     social_instagram: '',
@@ -225,7 +240,8 @@ const saveSettings = async () => {
             } else if (key === 'favicon_file' && form.favicon_file) {
                 formData.append('favicon', form.favicon_file);
             } else if (!key.endsWith('_file') && key !== 'logo' && key !== 'favicon') {
-                formData.append(key, form[key] || '');
+                const value = form[key];
+                formData.append(key, (value === null || value === undefined) ? '' : value);
             }
         });
 
@@ -235,7 +251,7 @@ const saveSettings = async () => {
             }
         });
 
-        alert('Settings saved successfully!');
+        alert(t('success_update'));
         
         // Refresh to update saved URLs
         fetchSettings();
@@ -243,7 +259,7 @@ const saveSettings = async () => {
         faviconPreview.value = null;
     } catch (error) {
         console.error('Error saving settings:', error);
-        alert(error.response?.data?.message || 'Failed to save settings.');
+        alert(error.response?.data?.message || t('failed_save'));
     } finally {
         loading.value = false;
     }

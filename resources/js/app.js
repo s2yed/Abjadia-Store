@@ -8,9 +8,11 @@ import Profile from './components/customer/Profile.vue';
 import OrderList from './components/customer/OrderList.vue';
 import OrderDetail from './components/customer/OrderDetail.vue';
 import FavoritesList from './components/customer/FavoritesList.vue';
+import CheckoutPage from './components/customer/CheckoutPage.vue';
 import CartCount from './components/ui/CartCount.vue';
 import SideCart from './components/ui/SideCart.vue';
 import Toast from './components/ui/Toast.vue';
+import HeroSlider from './components/ui/HeroSlider.vue';
 import { useCart } from './stores/cart';
 import { useNotification } from './stores/notification';
 
@@ -28,8 +30,10 @@ app.component('profile-component', Profile);
 app.component('order-list-component', OrderList);
 app.component('order-detail-component', OrderDetail);
 app.component('favorites-list-component', FavoritesList);
+app.component('checkout-page-component', CheckoutPage);
 app.component('cart-count-component', CartCount);
 app.component('side-cart-component', SideCart);
 app.component('toast-component', Toast);
+app.component('hero-slider-component', HeroSlider);
 
 app.mount('#app');

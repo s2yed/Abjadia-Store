@@ -23,7 +23,7 @@
                     <div class="px-4 py-4 sm:px-6 flex items-center justify-between">
                         <div class="flex items-center space-x-4">
                             <div v-if="page.image_path" class="flex-shrink-0 h-10 w-10">
-                                <img :src="`/storage/${page.image_path}`" class="h-10 w-10 rounded-lg object-cover border" />
+                                <img :src="page.image_path.startsWith('http') || page.image_path.startsWith('/storage') || page.image_path.startsWith('storage') ? (page.image_path.startsWith('http') || page.image_path.startsWith('/') ? page.image_path : '/' + page.image_path) : '/storage/' + page.image_path" class="h-10 w-10 rounded-lg object-cover border" />
                             </div>
                             <div v-else class="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
                                 <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

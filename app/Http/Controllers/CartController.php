@@ -19,9 +19,9 @@ class CartController extends Controller
         $this->shippingService = $shippingService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $cart = Session::get('cart', []);
+        $cart = $request->session()->get('cart', []);
         $cartItems = collect();
 
         foreach ($cart as $id => $details) {
@@ -46,7 +46,7 @@ class CartController extends Controller
         });
 
         // Apply Coupon if exists
-        $couponCode = Session::get('coupon_code');
+        $couponCode = $request->session()->get('coupon_code');
         $couponDiscount = 0;
         $coupon = null;
         $couponError = null;
@@ -70,7 +70,7 @@ class CartController extends Controller
                     $couponError = __('Minimum order value for this coupon is :amount', ['amount' => $coupon->min_order_value]);
                 }
             } else {
-                Session::forget('coupon_code'); // Invalid
+                $request->session()->forget('coupon_code'); // Invalid
                 $couponError = __('Invalid or expired coupon.');
             }
         }
@@ -84,7 +84,7 @@ class CartController extends Controller
 
         // Shipping Zones for Estimation
         $shippingZones = ShippingZone::where('is_active', true)->get();
-        $selectedZoneId = Session::get('shipping_zone_id');
+        $selectedZoneId = $request->session()->get('shipping_zone_id');
         $totalWeight = $cartItems->sum(function($item) {
             return ($item->weight ?? 0) * $item->quantity;
         });
@@ -119,7 +119,7 @@ class CartController extends Controller
         $quantity = (int) $request->get('quantity', 1);
 
         $product = Product::findOrFail($id);
-        $cart = Session::get('cart', []);
+        $cart = $request->session()->get('cart', []);
 
         // Check stock for initial add or if quantity exceeds stock
         if ($product->stock !== null && $quantity > $product->stock) {
@@ -155,7 +155,7 @@ class CartController extends Controller
             ];
         }
 
-        Session::put('cart', $cart);
+        $request->session()->put('cart', $cart);
 
         if ($request->wantsJson()) {
              $totalQuantity = array_sum(array_column($cart, 'quantity'));
@@ -171,7 +171,7 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = Session::get('cart', []);
+        $cart = $request->session()->get('cart', []);
 
         if (isset($cart[$id])) {
             $product = Product::find($id);
@@ -184,19 +184,19 @@ class CartController extends Controller
                 return redirect()->back()->with('error', __('Only :count units available in stock.', ['count' => $product->stock]));
             }
             $cart[$id]['quantity'] = (int) $request->quantity;
-            Session::put('cart', $cart);
+            $request->session()->put('cart', $cart);
         }
 
         if ($request->wantsJson()) {
-            return $this->getCartDataResponse();
+            return $this->getCartDataResponse($request);
         }
 
         return redirect()->route('cart.index')->with('success', __('Cart updated!'));
     }
 
-    protected function getCartDataResponse()
+    public function getCartDataResponse(Request $request)
     {
-        $cart = Session::get('cart', []);
+        $cart = $request->session()->get('cart', []);
         $cartItems = collect();
 
         foreach ($cart as $id => $details) {
@@ -216,7 +216,8 @@ class CartController extends Controller
             return $item->price * $item->quantity;
         });
 
-        $couponCode = Session::get('coupon_code');
+        $couponCode = $request->session()->get('coupon_code');
+        
         $couponDiscount = 0;
         $coupon = null;
 
@@ -236,7 +237,7 @@ class CartController extends Controller
                     $couponDiscount = 0;
                 }
             } else {
-                Session::forget('coupon_code');
+                $request->session()->forget('coupon_code');
             }
         }
 
@@ -249,9 +250,25 @@ class CartController extends Controller
             return ($item->weight ?? 0) * $item->quantity;
         });
 
-        $selectedZoneId = Session::get('shipping_zone_id');
+        $selectedZoneId = $request->session()->get('shipping_zone_id');
         $shippingEstimation = $this->shippingService->calculate($total, $totalWeight, $selectedZoneId);
         $totalWithShipping = $total + $shippingEstimation['cost'];
+
+        // Fetch Recommended Products
+        $recommended = Product::where('is_active', true)
+            ->inRandomOrder()
+            ->take(4)
+            ->get()
+            ->map(function ($product) {
+                 return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => (float)$product->price,
+                    'image' => $product->image,
+                    'slug' => $product->slug,
+                    'type' => $product->type, // Optional: helpful for display
+                ];
+            });
 
         return response()->json([
             'items' => $cartItems->map(function($item) {
@@ -260,7 +277,10 @@ class CartController extends Controller
                     'name' => $item->name,
                     'price' => (float)$item->price,
                     'quantity' => (int)$item->quantity,
+                    'image' => $item->image,
+                    'type' => $item->type,
                     'is_free' => (bool)($item->is_free ?? false),
+                    'original_price' => (float)($item->original_price ?? $item->price),
                     'total' => (float)($item->price * $item->quantity)
                 ];
             }),
@@ -270,34 +290,38 @@ class CartController extends Controller
             'total_discount' => round($totalDiscount, 2),
             'total' => round($totalWithShipping, 2),
             'subtotal_after_discount' => round($total, 2),
-            'free_shipping' => (bool)($result['free_shipping'] ?? false),
-            'free_shipping_threshold' => (float)($result['free_shipping_threshold'] ?? 0),
+            'currency' => \App\Models\Setting::first()->currency ?? 'SAR',
+            'free_shipping' => (bool)($result['free_shipping'] ?? false || $shippingEstimation['is_free']),
+            'free_shipping_threshold' => (float)($shippingEstimation['threshold'] ?? 0),
             'shipping_label' => $shippingEstimation['label'] ?? '0.00',
             'shipping_cost' => (float)($shippingEstimation['cost'] ?? 0),
             'shipping_is_free' => (bool)($shippingEstimation['is_free'] ?? false),
+            'coupon_code' => $couponCode ?? null,
+            'selected_zone_id' => $selectedZoneId,
+            'recommended' => $recommended,
         ]);
     }
 
     public function updateZone(Request $request)
     {
         $request->validate(['zone_id' => 'nullable|exists:shipping_zones,id']);
-        Session::put('shipping_zone_id', $request->zone_id);
-        Session::save();
+        $request->session()->put('shipping_zone_id', $request->zone_id);
+        $request->session()->save();
 
-        return $this->getCartDataResponse();
+        return $this->getCartDataResponse($request);
     }
 
     public function destroy(Request $request, $id)
     {
-        $cart = Session::get('cart', []);
+        $cart = $request->session()->get('cart', []);
         
         if (isset($cart[$id])) {
             unset($cart[$id]);
-            Session::put('cart', $cart);
+            $request->session()->put('cart', $cart);
         }
 
         if ($request->wantsJson()) {
-            return $this->getCartDataResponse();
+            return $this->getCartDataResponse($request);
         }
 
         return redirect()->route('cart.index')->with('success', __('Product removed from cart!'));
@@ -310,26 +334,41 @@ class CartController extends Controller
         $coupon = \App\Models\Coupon::where('code', $request->code)->first();
 
         if (!$coupon) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => __('Invalid coupon code')], 422);
+            }
             return redirect()->back()->with('error', __('Invalid coupon code'));
         }
 
         // Use the consolidated isValid method
         if (!$coupon->isValid()) {
+             if ($request->wantsJson()) {
+                return response()->json(['message' => __('Invalid, expired, or inactive coupon.')], 422);
+             }
              return redirect()->back()->with('error', __('Invalid, expired, or inactive coupon.'));
         }
 
-        Session::put('coupon_code', $coupon->code);
-        Session::save();
+        $request->session()->put('coupon_code', $coupon->code);
+        $request->session()->save();
+
+        if ($request->wantsJson()) {
+            return $this->getCartDataResponse($request);
+        }
 
         return redirect()->route('cart.index')->with('success', __('Coupon applied!'));
     }
 
     public function removeCoupon(Request $request)
     {
-        $request->session()->forget('coupon_code');
-        $request->session()->forget('coupon_discount');
-        $request->session()->save();
+          
+        // Use pull() to retrieve and remove in one operation
+        $request->session()->pull('coupon_code');
+        $request->session()->pull('coupon_discount');
         
+        if ($request->wantsJson()) {
+            return $this->getCartDataResponse($request);
+        }
+
         return redirect()->route('cart.index')->with('success', __('Coupon removed!'));
     }
 

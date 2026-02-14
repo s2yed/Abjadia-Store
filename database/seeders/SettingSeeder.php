@@ -37,6 +37,8 @@ class SettingSeeder extends Seeder
                 'social_linkedin' => '',
                 'social_snapchat' => '',
                 'social_youtube' => '',
+                'logo' => 'banners/hero_placeholder.jpg', // Placeholder
+                'favicon' => 'favicon.ico',
             ]
         );
     }

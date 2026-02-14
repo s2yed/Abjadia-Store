@@ -8,7 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Admin\Auth\AdminAuthenticatedSessionController;
 use App\Http\Controllers\LocaleController;
-use Illuminate\Support\Facades\Route;
+
 
 Route::get('lang/{locale}', [LocaleController::class, 'setLocale'])->name('lang.set');
 
@@ -21,11 +21,12 @@ Route::middleware(['locale'])->group(function () {
     Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/cart-data', [CartController::class, 'getCartDataResponse'])->name('cart.data');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::put('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
     Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->where('id', '[0-9]+')->name('cart.destroy');
     Route::post('/cart/update-zone', [CartController::class, 'updateZone'])->name('cart.zone.update');
 
     Route::middleware(['auth', 'status'])->group(function () {
@@ -82,7 +83,7 @@ Route::middleware(['locale'])->group(function () {
         Route::apiResource('products', \App\Http\Controllers\Api\ProductController::class);
         Route::apiResource('categories', \App\Http\Controllers\Api\CategoryController::class);
         Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class)->only(['index', 'show', 'update']);
-        Route::apiResource('banners', \App\Http\Controllers\Api\BannerController::class);
+        Route::apiResource('banners', \App\Http\Controllers\Api\BannerController::class)->except(['index']);
         Route::get('brands', [\App\Http\Controllers\Api\BrandController::class, 'index'])->name('brands.index');
         Route::get('dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats'])->name('dashboard.stats');
         
@@ -106,6 +107,11 @@ Route::middleware(['locale'])->group(function () {
         
         // Payments
         Route::apiResource('order-payments', \App\Http\Controllers\Api\OrderPaymentController::class)->only(['store', 'destroy']);
+    });
+
+    // Public API routes
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('banners', [\App\Http\Controllers\Api\BannerController::class, 'index'])->name('banners.index');
     });
 
     Route::get('/p/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('pages.show');

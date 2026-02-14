@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 use Spatie\Translatable\HasTranslations;
 
+use App\Traits\HasImage;
+
 class Category extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasFactory, HasTranslations, HasImage;
 
     public $translatable = ['name', 'description'];
 

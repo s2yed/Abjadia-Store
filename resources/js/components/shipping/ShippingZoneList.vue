@@ -7,6 +7,33 @@
             </router-link>
         </div>
 
+        <!-- System Explanation Card -->
+        <div class="mb-8 bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg shadow-sm">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3 rtl:ml-0 rtl:mr-3">
+                    <h3 class="text-sm font-bold text-orange-800 mb-1">فهم نظام الشحن والمناطق</h3>
+                    <p class="text-xs text-orange-700 leading-relaxed mb-3">
+                        نظام الشحن في المتجر يعتمد على تقسيم جغرافي يسمى <b>"المناطق" (Zones)</b>. لكل منطقة يمكنك تحديد شركات شحن محددة وتكلفة شحن خاصة بها.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white/50 p-3 rounded border border-orange-100">
+                            <h4 class="text-xs font-black text-orange-800 uppercase mb-1">المناطق (Zones):</h4>
+                            <p class="text-[11px] text-orange-700">هي مجموعات جغرافية، مثلاً: "المنطقة الوسطى"، "دول الخليج"، أو حتى "توصيل منزلي داخل الرياض".</p>
+                        </div>
+                        <div class="bg-white/50 p-3 rounded border border-orange-100">
+                            <h4 class="text-xs font-black text-orange-800 uppercase mb-1">الأسعار (Rates):</h4>
+                            <p class="text-[11px] text-orange-700">داخل كل منطقة، تستطيع تحديد التكلفة (ثابتة أو حسب الوزن) لكل شركة شحن (مثل أرامكس أو سمسا).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Success Message -->
         <div v-if="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
             {{ success }}

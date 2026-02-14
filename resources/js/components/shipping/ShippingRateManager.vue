@@ -7,6 +7,30 @@
             </button>
         </div>
 
+        <!-- Rate Calculation Explanation -->
+        <div class="mb-6 bg-gray-50 border-r-4 border-gray-300 p-4 rounded-l-lg text-right" dir="rtl">
+            <h4 class="text-sm font-bold text-gray-800 mb-2">أنواع حساب الأسعار (Calculation Types):</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <span class="text-xs font-black text-gray-700 block uppercase mb-1">حمولة بالوزن (Weight):</span>
+                    <p class="text-[11px] text-gray-600 leading-snug">تحسب التكلفة بناءً على إجمالي وزن المنتجات. مثال: 0-5 كجم بـ 25 ريال.</p>
+                </div>
+                <div>
+                    <span class="text-xs font-black text-gray-700 block uppercase mb-1">حسب السعر (Price):</span>
+                    <p class="text-[11px] text-gray-600 leading-snug">تتغير التكلفة حسب مبلغ السلة. مثال: الطلبات بين 100-200 ريال شحنها 15 ريال.</p>
+                </div>
+                <div>
+                    <span class="text-xs font-black text-gray-700 block uppercase mb-1">ثابت (Flat Rate):</span>
+                    <p class="text-[11px] text-gray-600 leading-snug">تكلفة موحدة بغض النظر عن الوزن أو السعر. مثال: توصيل ثابت بـ 30 ريال.</p>
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-200">
+                <p class="text-[11px] text-indigo-700 font-bold">
+                    * حد الشحن المجاني (Threshold): هو المبلغ الذي إذا وصل إليه إجمالي السلة، يصبح الشحن لهذه المنطقة مجانياً تلقائياً.
+                </p>
+            </div>
+        </div>
+
         <div class="overflow-x-auto border rounded-lg">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">

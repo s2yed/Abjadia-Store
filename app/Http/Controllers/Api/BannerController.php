@@ -49,7 +49,7 @@ class BannerController extends Controller
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('banners', 'public');
-            $validated['image_path'] = '/storage/' . $path;
+            $validated['image_path'] = $path;
         }
 
         // Remove 'image' from validated array if it exists as we mapped it to image_path
@@ -99,7 +99,7 @@ class BannerController extends Controller
             }
 
             $path = $request->file('image')->store('banners', 'public');
-            $validated['image_path'] = '/storage/' . $path;
+            $validated['image_path'] = $path;
         }
 
         unset($validated['image']);

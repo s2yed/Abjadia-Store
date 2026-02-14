@@ -611,7 +611,7 @@ export default {
 
                 if (data.image) {
                      // Check if full URL or relative path
-                     previewImage.value = data.image.startsWith('http') ? data.image : `/storage/${data.image}`;
+                     previewImage.value = data.image.startsWith('http') || data.image.startsWith('/storage') || data.image.startsWith('storage') ? (data.image.startsWith('http') || data.image.startsWith('/') ? data.image : '/' + data.image) : `/storage/${data.image}`;
                 }
             } catch (err) {
                 error.value = t('failed_load');

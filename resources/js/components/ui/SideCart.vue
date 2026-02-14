@@ -3,7 +3,7 @@
         <!-- Overlay -->
         <div v-if="state.isOpen" 
              @click="close"
-             class="fixed inset-0 bg-black bg-opacity-50 z-[60] transition-opacity duration-300">
+             class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-opacity duration-300">
         </div>
 
         <!-- Sidebar -->
@@ -37,7 +37,7 @@
                 </div>
 
                 <div v-else v-for="item in state.items" :key="item.id" class="flex gap-4 bg-white p-3 rounded-lg border hover:border-primary-light transition-all shadow-sm">
-                    <img :src="item.image.startsWith('http') ? item.image : '/storage/' + item.image" class="w-16 h-16 object-cover rounded-md border">
+                    <img :src="item.image.startsWith('http') || item.image.startsWith('/storage') || item.image.startsWith('storage') ? (item.image.startsWith('http') || item.image.startsWith('/') ? item.image : '/' + item.image) : '/storage/' + item.image" class="w-16 h-16 object-cover rounded-md border">
                     <div class="flex-1">
                         <h3 class="text-sm font-bold text-gray-800">{{ item.name }}</h3>
                         <p class="text-xs text-gray-500">{{ item.type }}</p>
@@ -58,9 +58,9 @@
                     <span class="text-primary-dark">{{ state.subtotal }} {{ state.currency }}</span>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <a href="/cart" class="text-center py-3 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
-                        {{ $t('View Cart') }}
-                    </a>
+                    <button @click="close" class="text-center py-3 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
+                        {{ $t('Continue Shopping') }}
+                    </button>
                     <a href="/checkout" class="text-center py-3 bg-primary-dark text-white rounded-lg text-sm font-bold hover:bg-black transition-colors shadow-md">
                         {{ $t('Checkout') }}
                     </a>

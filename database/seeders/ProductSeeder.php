@@ -23,8 +23,11 @@ class ProductSeeder extends Seeder
         $art = Category::where('slug', 'art-supplies')->first();
         $backpacks = Category::where('slug', 'backpacks')->first();
 
-        // Get Authors
+        // Get Authors, Translators, Publishers
         $authors = Author::all();
+        $translators = \App\Models\Translator::all();
+        $publishers = \App\Models\Publisher::all();
+        $brands = \App\Models\Brand::all();
 
         // --- BOOKS ---
         $books = [
@@ -136,17 +139,17 @@ class ProductSeeder extends Seeder
             unset($bookData['author_name']);
 
             $bookNameEn = $bookData['name']['en'];
-            $image = 'images/products/book.png';
-            if (Str::contains($bookNameEn, 'Harry Potter')) $image = 'images/products/harry_potter.png';
-            if (Str::contains($bookNameEn, 'Cairo Trilogy')) $image = 'images/products/cairo_trilogy.png';
-            if (Str::contains($bookNameEn, '1984')) $image = 'images/products/1984.png';
-            if (Str::contains($bookNameEn, 'Quran')) $image = 'images/products/quran.png';
-            if (Str::contains($bookNameEn, 'Alchemist')) $image = 'images/products/alchemist.png';
-            if (Str::contains($bookNameEn, 'The Prophet')) $image = 'images/products/prophet.png';
-            if (Str::contains($bookNameEn, 'Orient Express')) $image = 'images/products/orient_express.png';
-            if (Str::contains($bookNameEn, 'Crime and Punishment')) $image = 'images/products/crime_punishment.png';
-            if (Str::contains($bookNameEn, 'Algorithms')) $image = 'images/products/algorithms.png';
-            if (Str::contains($bookNameEn, 'Bedtime Stories')) $image = 'images/products/bedtime_stories.png';
+            $image = 'products/book.png';
+            if (Str::contains($bookNameEn, 'Harry Potter')) $image = 'products/harry_potter.png';
+            if (Str::contains($bookNameEn, 'Cairo Trilogy')) $image = 'products/cairo_trilogy.png';
+            if (Str::contains($bookNameEn, '1984')) $image = 'products/1984.png';
+            if (Str::contains($bookNameEn, 'Quran')) $image = 'products/quran.png';
+            if (Str::contains($bookNameEn, 'Alchemist')) $image = 'products/alchemist.png';
+            if (Str::contains($bookNameEn, 'The Prophet')) $image = 'products/prophet.png';
+            if (Str::contains($bookNameEn, 'Orient Express')) $image = 'products/orient_express.png';
+            if (Str::contains($bookNameEn, 'Crime and Punishment')) $image = 'products/crime_punishment.png';
+            if (Str::contains($bookNameEn, 'Algorithms')) $image = 'products/algorithms.png';
+            if (Str::contains($bookNameEn, 'Bedtime Stories')) $image = 'products/bedtime_stories.png';
 
             $product = Product::create(array_merge($bookData, [
                 'slug' => Str::slug($bookNameEn) . '-' . rand(1000, 9999),
@@ -157,6 +160,8 @@ class ProductSeeder extends Seeder
                 'pages' => rand(100, 800),
                 'publication_year' => rand(1950, 2024),
                 'image' => $image,
+                'publisher_id' => $publishers->random()->id ?? null,
+                'brand_id' => $brands->random()->id ?? null,
             ]));
 
             if ($authorNameEn) {
@@ -212,12 +217,12 @@ class ProductSeeder extends Seeder
 
         foreach ($supplies as $item) {
             $supplyNameEn = $item['name']['en'];
-            $image = 'images/products/stationery.png';
-            if (Str::contains($supplyNameEn, 'Pencils')) $image = 'images/products/pencils.png';
-            if (Str::contains($supplyNameEn, 'Backpack')) $image = 'images/products/backpack.png';
-            if (Str::contains($supplyNameEn, 'Calculator')) $image = 'images/products/calculator.png';
-            if (Str::contains($supplyNameEn, 'Moleskine')) $image = 'images/products/moleskine.png';
-            if (Str::contains($supplyNameEn, 'Parker')) $image = 'images/products/parker_pen.png';
+            $image = 'products/stationery.png';
+            if (Str::contains($supplyNameEn, 'Pencils')) $image = 'products/pencils.png';
+            if (Str::contains($supplyNameEn, 'Backpack')) $image = 'products/backpack.png';
+            if (Str::contains($supplyNameEn, 'Calculator')) $image = 'products/calculator.png';
+            if (Str::contains($supplyNameEn, 'Moleskine')) $image = 'products/moleskine.png';
+            if (Str::contains($supplyNameEn, 'Parker')) $image = 'products/parker_pen.png';
 
             Product::create([
                 'name' => $item['name'],

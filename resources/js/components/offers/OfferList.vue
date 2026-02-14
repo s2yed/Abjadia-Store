@@ -12,6 +12,34 @@
             </div>
         </div>
 
+        <!-- System Explanation Card -->
+        <div class="mb-8 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg shadow-sm">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3 rtl:ml-0 rtl:mr-3">
+                    <h3 class="text-sm font-bold text-blue-800 mb-1">كيف يعمل نظام العروض؟</h3>
+                    <p class="text-xs text-blue-700 leading-relaxed mb-2">
+                        نظام العروض يتيح لك تطبيق خصومات تلقائية أو تقديم هدايا (مثل شحن مجاني) بناءً على شروط محددة. 
+                        يتم التحقق من هذه العروض تلقائياً عند إضافة منتج للسلة.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div class="bg-white/50 p-2 rounded border border-blue-100">
+                            <span class="text-[10px] font-black text-blue-800 block uppercase">مثال خصم القيمة:</span>
+                            <span class="text-xs text-blue-600">اشترِ بقيمة 1000 ريال واحصل على خصم 100 ريال تلقائياً.</span>
+                        </div>
+                        <div class="bg-white/50 p-2 rounded border border-blue-100">
+                            <span class="text-[10px] font-black text-blue-800 block uppercase">مثال شحن مجاني:</span>
+                            <span class="text-xs text-blue-600">عروض خاصة لفترة محدودة تمنح العميل شحناً مجانياً لأي طلب.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">

@@ -60,7 +60,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ $t('value') }} (Qty/Amount)</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('value') }}</label>
                         <input v-model="form.conditions.value" type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-white border" />
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">{{ $t('value') }} (Qty/%/Amount)</label>
+                        <label class="block text-sm font-medium text-gray-700">{{ $t('value') }}</label>
                         <input v-model="form.actions.value" type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-white border" />
                     </div>
                 </div>

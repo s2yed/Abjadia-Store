@@ -23,7 +23,7 @@ class ShippingCompanyController extends Controller
 
         if ($request->hasFile('logo')) {
             $path = $request->file('logo')->store('shipping_companies', 'public');
-            $validated['logo'] = '/storage/' . $path;
+            $validated['logo'] = $path;
         }
 
         $company = ShippingCompany::create($validated);
@@ -45,7 +45,7 @@ class ShippingCompanyController extends Controller
 
         if ($request->hasFile('logo')) {
             $path = $request->file('logo')->store('shipping_companies', 'public');
-            $validated['logo'] = '/storage/' . $path;
+            $validated['logo'] = $path;
         }
 
         $shippingCompany->update($validated);

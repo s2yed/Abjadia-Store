@@ -143,11 +143,11 @@ class PromotionEngine
                 $freeProductItem->quantity = $freeQty;
                 $freeProductItem->is_reward = true; // Mark as reward
                 $freeProductItem->is_free = true;   // For backwards compatibility in views
-                $freeProductItem->price = 0;        // Set price to 0
+                $freeProductItem->price = 0;        // Set to 0 so subtotal is clean
                 $freeProductItem->from_offer = $offer->id;
                 
-                // Add to discount for display purposes
-                $discount += $freeProduct->price * $freeQty;
+                // Do NOT add to discount to avoid "double discount" confusion in the UI
+                //$discount += $freeProduct->price * $freeQty;
 
                 // Push as a separate line item
                 $cartItems->push($freeProductItem);

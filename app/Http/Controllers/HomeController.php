@@ -59,6 +59,8 @@ class HomeController extends Controller
             ->get()
             ->groupBy('position');
 
+        $setting = \App\Models\Setting::first();
+
         return view('home', compact(
             'featuredBooks',
             'bestSelling',
@@ -67,7 +69,8 @@ class HomeController extends Controller
             'suggestions',
             'supplies',
             'categories',
-            'banners'
+            'banners',
+            'setting'
         ));
     }
 }
